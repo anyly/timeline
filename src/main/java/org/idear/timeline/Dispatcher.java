@@ -1,5 +1,6 @@
 package org.idear.timeline;
 
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
 /**
@@ -7,8 +8,9 @@ import java.util.LinkedList;
  */
 public class Dispatcher {
     private String name;
-    private LinkedList<Plot> multiLine = new LinkedList<>();
-    private LinkedList<Event> toBeContinued = new LinkedList<>();
+    LinkedHashSet<Plot> multiLine = new LinkedHashSet<>();
+    private LinkedHashSet<Event> toBeContinued = new LinkedHashSet<>();
+    LinkedHashSet<String> ploatName = null;
 
     public Dispatcher(String name) {
         this.name = name;
@@ -16,6 +18,14 @@ public class Dispatcher {
 
     public Dispatcher line(Plot plot) {
         multiLine.add(plot);
+        return this;
+    }
+
+    public Dispatcher line(String plot) {
+        if (ploatName == null) {
+            ploatName = new LinkedHashSet<>();
+        }
+        ploatName.add(plot);
         return this;
     }
 
@@ -33,11 +43,10 @@ public class Dispatcher {
                 plot.doing();
             }
         }
-        isCompleted();
     }
 
-    public void isCompleted() {
-        LinkedList<Event> newList = new LinkedList<>();
+    public boolean isCompleted() {
+        LinkedHashSet<Event> newList = new LinkedHashSet<>();
         for (Event event: toBeContinued) {
             if (!event.ending()) {
                 newList.add(event);
@@ -45,7 +54,8 @@ public class Dispatcher {
         }
         toBeContinued = newList;
         if (toBeContinued.size() > 0) {
-            throw new NotCompletedException();
+            return false;
         }
+        return true;
     }
 }

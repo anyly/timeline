@@ -3,51 +3,86 @@ package test;
 
 import org.idear.timeline.*;
 
+import static org.idear.timeline.Story.timeline;
+
 public class TestStory {
     public static void main(String[] args) {
         Story story = Story.
-                timeline()
+                configuration()
                 .name("故事")
-                .meanwhile(new Dispatcher("并行")
-                        .line(new Event("并行1") {
-                            @Override
-                            public void doing() {
-
-                            }
-
-                            @Override
-                            public boolean when() {
-                                return false;
-                            }
-
-                            @Override
-                            public boolean ending() {
-                                return false;
-                            }
-                        })
-                        .line(new Event("并行2") {
-                            @Override
-                            public void doing() {
-
-                            }
-
-                            @Override
-                            public boolean when() {
-                                return false;
-                            }
-
-                            @Override
-                            public boolean ending() {
-                                return false;
-                            }
-                        })
-                )
-                .then(new Plot("串行") {
+                .plot(new Plot("预设1") {
                     @Override
                     public void doing() {
-
+                        System.out.println(getName());
                     }
                 })
+                .plot(new Plot("预设2") {
+                    @Override
+                    public void doing() {
+                        System.out.println(getName());
+                    }
+                })
+                .timeline()
+                .meanwhile(new Dispatcher("并行")
+                        .line(new Event("并行事件") {
+                            @Override
+                            public void doing() {
+                                System.out.println(getName());
+                            }
+
+                            @Override
+                            public boolean when() {
+                                return true;
+                            }
+
+                            @Override
+                            public boolean ending() {
+                                return true;
+                            }
+                        })
+                        .line(new Event("并行未触发事件") {
+                            @Override
+                            public void doing() {
+                                System.out.println(getName());
+                            }
+
+                            @Override
+                            public boolean when() {
+                                return false;
+                            }
+
+                            @Override
+                            public boolean ending() {
+                                return false;
+                            }
+                        })
+                        .line("预设1")
+                )
+                .then(new Event("串行事件") {
+                    @Override
+                    public void doing() {
+                        System.out.println(getName());
+                    }
+
+                    @Override
+                    public boolean when() {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean ending() {
+                        return true;
+                    }
+                })
+                .then(new Plot("串行剧情") {
+                    @Override
+                    public void doing() {
+                        System.out.println(getName());
+                    }
+                })
+                .then("预设2")
                 .construct();
+
+        story.play();
     }
 }

@@ -15,4 +15,7 @@ public abstract class Plot {
      */
     public abstract void doing();
 
+    public String getName() {
+        return name;
+    }
 }
