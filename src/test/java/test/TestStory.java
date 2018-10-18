@@ -1,9 +1,10 @@
 package test;
 
 
-import org.idear.timeline.*;
-
-import static org.idear.timeline.Story.timeline;
+import org.idear.timeline.Dispatcher;
+import org.idear.timeline.Event;
+import org.idear.timeline.Plot;
+import org.idear.timeline.Story;
 
 public class TestStory {
     public static void main(String[] args) {

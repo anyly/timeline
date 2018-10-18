@@ -1,7 +1,6 @@
 package org.idear.timeline;
 
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 
 /**
  * 分发器，用于并发
