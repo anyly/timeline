@@ -12,19 +12,23 @@ public class Projector {
         public void run() {
             Story story = null;
             for (;;) {
-                try {
-                    for (;;){
-                        story = stories.getFirst();
+                int i=0;
+                while (i<stories.size()) {
+                    try {
+                        story = stories.get(i);
                         if (story != null) {
                             if (story.play()) {
-                                stories.poll();
+                                stories.remove(i);
+                                continue;
                             }
                         } else {
-                            stories.poll();
+                            stories.remove(i);
+                            continue;
                         }
-                    }
-                } catch (NoSuchElementException e) {
+                        i++;
+                    } catch (Exception e) {
 
+                    }
                 }
             }
         }
