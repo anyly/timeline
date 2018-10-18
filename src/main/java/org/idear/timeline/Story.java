@@ -69,6 +69,7 @@ public class Story {
                     }
                     dispatcher.multiLine.add(handler);
                 }
+                dispatcher.ploatName = null;
                 _story.sequence.add(dispatcher);
                 return this;
             }
@@ -103,6 +104,10 @@ public class Story {
     }
 
     public boolean play() {
+        // 是否已经完成
+        if (isCompleted()) {
+            return true;
+        }
         // 当前步骤是否通过
         if (!checkAllowCondition()) {
             return false;
