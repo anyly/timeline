@@ -48,17 +48,20 @@ public class GameCenter {
         allGames.remove(no);
     }
 
-    public synchronized void login(Endpoint endpoint) {
+    public void login(Endpoint endpoint) {
+        // 同一个user上锁
         String user = endpoint.getUser();
-        Endpoint old = allEndpoints.get(user);
-        if (old != null) {
-            try {
-                old.session.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+        synchronized (user.intern()) {
+            Endpoint old = allEndpoints.get(user);
+            if (old != null) {
+                try {
+                    old.session.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
+            allEndpoints.put(user, endpoint);
         }
-        allEndpoints.put(user, endpoint);
     }
 
     public void logout(String user) {

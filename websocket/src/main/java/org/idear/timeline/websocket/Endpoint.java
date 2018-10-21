@@ -186,7 +186,17 @@ public abstract class Endpoint extends javax.websocket.Endpoint {
     public void setImg(String img) {
         this.img = img;
     }
-    ////////业务逻辑////////////
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        try {
+            session.close();
+        } catch (Exception e) {
+
+        }
+    }
+////////业务逻辑////////////
     /**
      * 登录
      * @param data
@@ -205,9 +215,13 @@ public abstract class Endpoint extends javax.websocket.Endpoint {
      */
     public String onLogout() {
         String u = user;
-        gameCenter.logout(user);
-        user = null;
-        img = null;
+        try {
+            gameCenter.logout(user);
+            user = null;
+            img = null;
+        } catch (Exception e) {
+
+        }
         return u;
     }
 
