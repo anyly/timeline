@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="js/websocket-client.js"></script>
+</head>
+<body>
+<div style="display: flex;flex-direction: column;align-items:center;padding: 10px 20px;">
+    <ul id="msg">
+
+    </ul>
+    <textarea id="textarea" style="width: 450px; height: 300px"></textarea>
+    <input id="text"/>
+    <button id="btn1" type="button">登录</button>
+    <button id="btn2" type="button">创建房间</button>
+    <button id="btn3" type="button">删除房间</button>
+    <button id="btn4" type="button">加入房间</button>
+    <button id="btn5" type="button">离开房间</button>
+    <button id="btn6" type="button">登出</button>
+    <p id="error"></p>
+</div>
+<script>
+    var ws = new WebSocketClient('ws://localhost:8080/myEndpoint');
+    ws.onError(function (event) {
+       document.querySelector('#error').innerHTML = JSON.stringify(event);
+    });
+    document.querySelector('#btn1').addEventListener('click', function () {
+        var user = document.querySelector('#text').value;
+        ws.login(user, 'https://www.baidu.com/img/baidu_jgylogo3.gif', function (data) {
+            document.querySelector('#textarea').innerHTML += '\n登录用户:'+JSON.stringify(data);
+        });
+    }, false);
+    document.querySelector('#btn2').addEventListener('click', function () {
+        var value = document.querySelector('#text').value;
+        try {
+            value = JSON.parse(value);
+        } catch (e) {
+            value = null;
+        }
+
+        ws.newGame(value, function (no) {
+            document.querySelector('#textarea').innerHTML += '\n创建房间号:'+no;
+        });
+    }, false);
+    document.querySelector('#btn3').addEventListener('click', function () {
+        var value = document.querySelector('#text').value;
+        var no = parseInt(value);
+        ws.removeGame(no, function () {
+            document.querySelector('#textarea').innerHTML += '\n删除房间号:'+no;
+        });
+    }, false);
+    document.querySelector('#btn4').addEventListener('click', function () {
+        var value = document.querySelector('#text').value;
+        var no = parseInt(value);
+        ws.joinGame(no, function (data) {
+            if (data) {
+                document.querySelector('#textarea').innerHTML += '\n加入房间号:'+no;
+            } else {
+                document.querySelector('#textarea').innerHTML += '\n无法加入, 房间号:'+no+'不存在!';
+            }
+
+        });
+    }, false);
+    document.querySelector('#btn5').addEventListener('click', function () {
+        ws.leaveGame(function (no) {
+            if (no) {
+                document.querySelector('#textarea').innerHTML += '\n离开房间号:'+no;
+            } else {
+                document.querySelector('#textarea').innerHTML += '\n无法离开, 未加入房间';
+            }
+
+        });
+    }, false);
+    document.querySelector('#btn6').addEventListener('click', function () {
+        ws.logout(function (user) {
+            document.querySelector('#textarea').innerHTML += '\n登出用户:'+user;
+        });
+    }, false);
+</script>
+</body>
+</html>

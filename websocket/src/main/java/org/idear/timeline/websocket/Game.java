@@ -7,10 +7,14 @@ import org.idear.timeline.Story;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
-public abstract class Room {
+public abstract class Game {
+    private JSONObject config;
     private int no;
     Projector projector;
 
+    private LinkedHashMap<String, Player> allPlayers = new LinkedHashMap<>();
+
+    //////////////////getter setter ////////////////////////
     public int getNo() {
         return no;
     }
@@ -19,8 +23,15 @@ public abstract class Room {
         this.no = no;
     }
 
-    private LinkedHashMap<String, Player> allPlayers = new LinkedHashMap<>();
+    public JSONObject getConfig() {
+        return config;
+    }
 
+    public void setConfig(JSONObject config) {
+        this.config = config;
+    }
+
+    ////////////////故事编排///////////////
     public abstract Story story();
 
     ////////////////账号登录/登出相关////////////////////////////
