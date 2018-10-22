@@ -1,4 +1,4 @@
-package org.idear.timeline;
+package com.idearfly.timeline;
 
 import java.util.LinkedHashSet;
 

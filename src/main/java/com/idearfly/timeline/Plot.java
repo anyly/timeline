@@ -1,4 +1,4 @@
-package org.idear.timeline;
+package com.idearfly.timeline;
 
 /**
  * 故事情节

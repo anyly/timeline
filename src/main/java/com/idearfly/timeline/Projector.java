@@ -1,7 +1,6 @@
-package org.idear.timeline;
+package com.idearfly.timeline;
 
 import java.util.LinkedList;
-import java.util.NoSuchElementException;
 
 /**
  * 放映室，用于运行故事

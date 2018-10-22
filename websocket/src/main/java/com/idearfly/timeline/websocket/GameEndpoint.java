@@ -1,4 +1,4 @@
-package org.idear.timeline.websocket;
+package com.idearfly.timeline.websocket;
 
 import javax.websocket.CloseReason;
 import javax.websocket.Session;

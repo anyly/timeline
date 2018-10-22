@@ -1,8 +1,8 @@
 package test;
 
-import org.idear.timeline.Plot;
-import org.idear.timeline.Projector;
-import org.idear.timeline.Story;
+import com.idearfly.timeline.Plot;
+import com.idearfly.timeline.Projector;
+import com.idearfly.timeline.Story;
 
 public class TestProjector {
     public static void main(String[] args) {

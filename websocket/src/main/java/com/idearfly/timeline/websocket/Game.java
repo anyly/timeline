@@ -1,8 +1,8 @@
-package org.idear.timeline.websocket;
+package com.idearfly.timeline.websocket;
 
 import com.alibaba.fastjson.JSONObject;
-import org.idear.timeline.Projector;
-import org.idear.timeline.Story;
+import com.idearfly.timeline.Projector;
+import com.idearfly.timeline.Story;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;

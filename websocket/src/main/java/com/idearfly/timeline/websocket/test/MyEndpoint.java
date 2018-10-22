@@ -1,7 +1,7 @@
-package org.idear.timeline.websocket.test;
+package com.idearfly.timeline.websocket.test;
 
 import com.alibaba.fastjson.JSONObject;
-import org.idear.timeline.websocket.GameEndpoint;
+import com.idearfly.timeline.websocket.GameEndpoint;
 
 public class MyEndpoint extends GameEndpoint {
     public JSONObject onChart(JSONObject jsonObject) {

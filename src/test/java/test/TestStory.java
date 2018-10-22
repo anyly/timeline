@@ -1,10 +1,10 @@
 package test;
 
 
-import org.idear.timeline.Dispatcher;
-import org.idear.timeline.Event;
-import org.idear.timeline.Plot;
-import org.idear.timeline.Story;
+import com.idearfly.timeline.Dispatcher;
+import com.idearfly.timeline.Event;
+import com.idearfly.timeline.Plot;
+import com.idearfly.timeline.Story;
 
 public class TestStory {
     public static void main(String[] args) {
