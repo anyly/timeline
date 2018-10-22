@@ -38,12 +38,12 @@
         }
 
         // 关闭窗口前
-        window.onbeforeunload = function () {
+        document.addEventListener('onbeforeunload', function () {
             websocket.close();
-        };
+        });
 
         // 切换窗口
-        document.addEventListener('visibilitychange',function(){
+        document.addEventListener('visibilitychange', function(){
             if(document.visibilityState=='hidden') { //状态判断
                 websocket.close();
             }else {
@@ -198,7 +198,8 @@
                 return this;
             }
             websocket.onerror = function (event) {
-                websocket.close();
+                console.error(JSON.stringify(event));
+                //websocket.close();
                 if (callback) {
                     callback(event);
                 }

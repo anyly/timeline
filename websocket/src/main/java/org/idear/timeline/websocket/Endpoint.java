@@ -23,6 +23,7 @@ public abstract class Endpoint extends javax.websocket.Endpoint {
 
     @Override
     public void onOpen(Session session, EndpointConfig config) {
+        Log.debug("open session", session.getId());
         this.session = session;
         load(config);
         this.session.addMessageHandler(new MessageHandler.Whole<String>() {
@@ -117,7 +118,9 @@ public abstract class Endpoint extends javax.websocket.Endpoint {
                         }
                     }
 
-                    Object returnObject = method.invoke(this, parameter.toArray());
+                    Object[] array = parameter.toArray();
+                    Object returnObject = method.invoke(this, array);
+                    Log.debug("onMessage", methodName+" invoke", array);
                     return returnObject;
                 }
 
@@ -127,7 +130,7 @@ public abstract class Endpoint extends javax.websocket.Endpoint {
             e.printStackTrace();
         }
 
-        System.out.println("找不到"+methodName+"()方法！");
+        Log.debug("onMessage", "找不到"+methodName+"()方法！");
         return null;
     }
 
@@ -139,19 +142,21 @@ public abstract class Endpoint extends javax.websocket.Endpoint {
     public void onClose(Session session, CloseReason closeReason) {
         super.onClose(session, closeReason);
         onLogout();
-        gameCenter = null;
-        this.session = null;
+        Log.debug("onClose session", session.getId());
+//        gameCenter = null;
+//        this.session = null;
     }
 
     @Override
     public void onError(Session session, Throwable thr) {
         super.onError(session, thr);
+        Log.debug("onError session", session.getId(), "cause", thr.getCause());
         thr.printStackTrace();
-        try {
-            session.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            session.close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "NORMAL CLOSURE"));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     /**
@@ -160,14 +165,23 @@ public abstract class Endpoint extends javax.websocket.Endpoint {
      * @param data
      */
     final public void emit(String action, Object data){
+        if (session == null) {
+            return;
+        }
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("action", action);
         jsonObject.put("data", data);
-        try {
-            String message = JSON.toJSONString(jsonObject, SerializerFeature.DisableCircularReferenceDetect);
-            session.getAsyncRemote().sendText(message);
-        } catch (Exception e) {
-            e.printStackTrace();
+        synchronized (session) {
+            if (!session.isOpen()) {
+                return;
+            }
+            try {
+                String message = JSON.toJSONString(jsonObject, SerializerFeature.DisableCircularReferenceDetect);
+                session.getAsyncRemote().sendText(message);
+            } catch (Exception e) {
+                Log.debug("emit session", session.getId(), "error", e.getCause());
+                e.printStackTrace();
+            }
         }
     }
     ///////////getter setter/////////////
