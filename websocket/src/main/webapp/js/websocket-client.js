@@ -2,7 +2,6 @@
  * Created by idear on 2018/9/21.
  */
 (function () {
-
     var httpPrefix = 'http_';
 
     var original = window['WebSocket'];

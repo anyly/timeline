@@ -1,18 +1,18 @@
 package org.idear.timeline.websocket;
 
-import com.alibaba.fastjson.JSONObject;
-
 import javax.websocket.CloseReason;
 import javax.websocket.Session;
 
-public class GameEndpoint extends Endpoint {
+public abstract class GameEndpoint extends Endpoint {
     protected Game game;
     protected Player player;
 
     @Override
     public void onClose(Session session, CloseReason closeReason) {
+        super.onClose(session, closeReason);
         if (player != null) {
             player.endpoint(null);
+            player = null;
         }
 
     }

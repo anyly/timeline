@@ -8,11 +8,13 @@ import javax.websocket.CloseReason;
 import javax.websocket.EndpointConfig;
 import javax.websocket.MessageHandler;
 import javax.websocket.Session;
-import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public abstract class Endpoint extends javax.websocket.Endpoint {
     protected GameCenter gameCenter;
@@ -76,11 +78,6 @@ public abstract class Endpoint extends javax.websocket.Endpoint {
     @SuppressWarnings("unchecked")
     private Object messageHandler(String action, Object data) {
         String methodName = methodName(action);
-//        if (methodName.equals("onLogin")) {
-//            return onLogin(data);
-//        } else if (methodName.equals("onLogout")) {
-//            return onLogout();
-//        }
 
         try {
             Class thisClass = this.getClass();
@@ -143,8 +140,8 @@ public abstract class Endpoint extends javax.websocket.Endpoint {
         super.onClose(session, closeReason);
         onLogout();
         Log.debug("onClose session", session.getId());
-//        gameCenter = null;
-//        this.session = null;
+        gameCenter = null;
+        this.session = null;
     }
 
     @Override
