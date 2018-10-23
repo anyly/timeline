@@ -52,13 +52,6 @@ public abstract class Endpoint extends javax.websocket.Endpoint {
     }
 
     private void load(EndpointConfig config) {
-//        String path = this.session.getRequestURI().getPath();
-//        String string = path;
-//        int index = path.lastIndexOf('/');
-//        if (index > 0) {
-//            string = path.substring(index + 1);
-//        }
-//        int no = Integer.valueOf(string);
         gameCenter = (GameCenter) config.getUserProperties().get(GameCenter.class.getName());
     }
 

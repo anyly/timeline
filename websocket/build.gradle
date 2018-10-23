@@ -5,7 +5,7 @@ plugins {
     id 'war'
 }
 
-group 'org.idear.timeline'
+group 'com.idearfly.timeline.websocket'
 version '1.0'
 
 sourceCompatibility = 1.8
