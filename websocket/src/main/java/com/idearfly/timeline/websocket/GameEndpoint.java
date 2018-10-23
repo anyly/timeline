@@ -4,7 +4,7 @@ import javax.websocket.CloseReason;
 import javax.websocket.Session;
 
 public abstract class GameEndpoint extends Endpoint {
-    protected Game game;
+    protected Game<Player> game;
     protected Player player;
 
     @Override
@@ -18,6 +18,9 @@ public abstract class GameEndpoint extends Endpoint {
     }
 
     public Game onJoinGame(Integer no) {
+        if (no == null) {
+            return null;
+        }
         game = gameCenter.game(no);
         if (game == null) {
             return null;
@@ -30,7 +33,11 @@ public abstract class GameEndpoint extends Endpoint {
 
             }
         } else {
-            player = new Player();
+            try {
+                player = game.playerClass().newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
             player.setUser(user);
             player.setImg(img);
             game.join(player);

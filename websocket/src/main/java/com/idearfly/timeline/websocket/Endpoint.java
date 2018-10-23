@@ -236,6 +236,9 @@ public abstract class Endpoint extends javax.websocket.Endpoint {
      * 删除游戏
      */
     public void onRemoveGame(Integer no) {
+        if (no == null) {
+            return;
+        }
         gameCenter.removeGame(no);
     }
 }

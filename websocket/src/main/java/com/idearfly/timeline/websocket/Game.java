@@ -4,17 +4,32 @@ import com.alibaba.fastjson.JSONObject;
 import com.idearfly.timeline.Projector;
 import com.idearfly.timeline.Story;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
-public abstract class Game {
+public abstract class Game<T extends Player> {
+    private Class<T> playerClass = (Class<T>) Player.class;
     private JSONObject config;
     private int no;
     Projector projector;
 
-    private LinkedHashMap<String, Player> allPlayers = new LinkedHashMap<>();
+    protected Game() {
+        try {
+            ParameterizedType parameterizedType = (ParameterizedType) this.getClass().getGenericSuperclass();
+            playerClass = (Class<T>) parameterizedType.getActualTypeArguments()[0];
+        } catch (Exception e) {
+
+        }
+    }
+
+    private LinkedHashMap<String, T> allPlayers = new LinkedHashMap<>();
 
     //////////////////getter setter ////////////////////////
+    public Class<T> playerClass() {
+        return playerClass;
+    }
+
     public int getNo() {
         return no;
     }
@@ -39,7 +54,7 @@ public abstract class Game {
      * 加入剧情
      * @param player
      */
-    public synchronized void join(Player player) {
+    public synchronized void join(T player) {
         allPlayers.put(player.getUser(), player);
     }
 
@@ -47,11 +62,11 @@ public abstract class Game {
      * 离开剧情
      * @param player
      */
-    public synchronized void leave(Player player) {
+    public synchronized void leave(T player) {
         allPlayers.remove(player);
     }
 
-    public Player player(String user) {
+    public T player(String user) {
         return allPlayers.get(user);
     }
 
@@ -62,8 +77,8 @@ public abstract class Game {
      * @param data
      */
     final public void emitAll(String action, JSONObject data) {
-        LinkedList<Player> list = new LinkedList(allPlayers.values());
-        for (Player player: list) {
+        LinkedList<T> list = new LinkedList(allPlayers.values());
+        for (T player: list) {
             try {
                 player.endpoint().emit(action, data);
             } catch (Exception e) {
