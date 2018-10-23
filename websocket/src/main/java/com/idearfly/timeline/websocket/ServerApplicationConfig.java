@@ -53,6 +53,10 @@ public class ServerApplicationConfig implements javax.websocket.server.ServerApp
                     path = iniPath;
                 }
 
+                if (path == null) {
+                    path = pathFromClass(cls);
+                }
+
                 ServerEndpointConfig.Builder builder = ServerEndpointConfig.Builder
                         .create(cls, path);
                 if (subprotocols != null) {
@@ -94,6 +98,10 @@ public class ServerApplicationConfig implements javax.websocket.server.ServerApp
                 return path;
             }
         }
+        return null;
+    }
+
+    private String pathFromClass(Class<? extends Endpoint> cls) {
         // 默认按照类名路径
         String path = cls.getSimpleName();
         if(Character.isUpperCase(path.charAt(0))) {
