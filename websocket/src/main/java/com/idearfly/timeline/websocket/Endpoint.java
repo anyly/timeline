@@ -39,9 +39,6 @@ public abstract class Endpoint extends javax.websocket.Endpoint {
                     // http请求
                     String newAction = action.substring(httpPrefix.length());
                     Object response = messageHandler(newAction, data);
-                    if (response == null) {
-                        response = httpResponse(newAction, data);
-                    }
                     emit(action, response);
                 } else {
                     // admit请求
@@ -121,10 +118,6 @@ public abstract class Endpoint extends javax.websocket.Endpoint {
         }
 
         Log.debug("onMessage", "找不到"+methodName+"()方法！");
-        return null;
-    }
-
-    protected Object httpResponse(String action, Object data) {
         return null;
     }
 
