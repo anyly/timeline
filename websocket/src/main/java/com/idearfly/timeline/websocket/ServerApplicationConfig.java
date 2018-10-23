@@ -2,17 +2,16 @@ package com.idearfly.timeline.websocket;
 
 
 import com.idearfly.timeline.websocket.com.idearfly.ini.IniFormatFile;
-import com.idearfly.timeline.websocket.test.MyGame;
 
+import javax.websocket.Decoder;
+import javax.websocket.Encoder;
 import javax.websocket.Endpoint;
+import javax.websocket.server.ServerEndpoint;
 import javax.websocket.server.ServerEndpointConfig;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by idear on 2018/9/21.
@@ -20,9 +19,13 @@ import java.util.Set;
 public class ServerApplicationConfig implements javax.websocket.server.ServerApplicationConfig  {
     @Override
     final public Set<ServerEndpointConfig> getEndpointConfigs(Set<Class<? extends Endpoint>> endpointClasses) {
+        Properties factory = null;
+        Properties mapping = null;
         IniFormatFile iniFormatFile = IniFormatFile.classpath("websocket.ini");
-        Properties factory = iniFormatFile.section("ClassFactory");
-        Properties mapping = iniFormatFile.section("URLPatternMapping");
+        if (iniFormatFile != null) {
+            factory = iniFormatFile.section("ClassFactory");
+            mapping = iniFormatFile.section("URLPatternMapping");
+        }
 
         GameCenter gameCenter = gameCenter(factory);
 
@@ -30,8 +33,46 @@ public class ServerApplicationConfig implements javax.websocket.server.ServerApp
         for (Class<? extends Endpoint> cls:endpointClasses) {
             boolean isAbstract = Modifier.isAbstract(cls.getModifiers());
             if (!isAbstract) {
-                String path = mapping(mapping, cls);
-                ServerEndpointConfig serverEndpointConfig = ServerEndpointConfig.Builder.create(cls, path).build();
+                String path = null;
+                String[] subprotocols = null;
+                Class<? extends Decoder>[] decoders = null;
+                Class<? extends Encoder>[] encoders = null;
+                Class<? extends ServerEndpointConfig.Configurator> configurator = null;
+
+                ServerEndpoint serverEndpoint = cls.getAnnotation(ServerEndpoint.class);
+                if (serverEndpoint != null) {
+                    path = serverEndpoint.value();
+                    subprotocols = serverEndpoint.subprotocols();
+                    decoders = serverEndpoint.decoders();
+                    encoders = serverEndpoint.encoders();
+                    configurator = serverEndpoint.configurator();
+                }
+
+                String iniPath = mapping(mapping, cls);
+                if (iniPath != null) {
+                    path = iniPath;
+                }
+
+                ServerEndpointConfig.Builder builder = ServerEndpointConfig.Builder
+                        .create(cls, path);
+                if (subprotocols != null) {
+                    builder.subprotocols(Arrays.asList(subprotocols));
+                }
+                if (decoders != null) {
+                    builder.decoders(Arrays.asList(decoders));
+                }
+                if (encoders != null) {
+                    builder.encoders(Arrays.asList(encoders));
+                }
+                if (configurator != null) {
+                    try {
+                        builder.configurator(configurator.newInstance());
+                    } catch (InstantiationException | IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                ServerEndpointConfig serverEndpointConfig =  builder.build();
                 serverEndpointConfig.getUserProperties().put(GameCenter.class.getName(), gameCenter);
                 result.add(serverEndpointConfig);
             }
@@ -63,6 +104,9 @@ public class ServerApplicationConfig implements javax.websocket.server.ServerApp
 
 
     protected GameCenter gameCenter(Properties factory) {
+        if (factory == null) {
+            return new GameCenter(DefaultGame.class);
+        }
         Class gameCenterClass = GameCenter.class;
         String gameCenterClassName = factory.getProperty("GameCenter");
         if (gameCenterClassName != null) {
@@ -93,6 +137,12 @@ public class ServerApplicationConfig implements javax.websocket.server.ServerApp
     @Override
     public Set<Class<?>> getAnnotatedEndpointClasses(Set<Class<?>> scanned) {
         // 过滤注视类
-        return scanned;
+        Set<Class<?>> annotatedEndpointClasses = new HashSet<>();
+        for (Class<?> cls: scanned) {
+            if (!Endpoint.class.isAssignableFrom(cls)) {
+                annotatedEndpointClasses.add(cls);
+            }
+        }
+        return annotatedEndpointClasses;
     }
 }

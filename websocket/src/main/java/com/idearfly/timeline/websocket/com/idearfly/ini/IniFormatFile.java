@@ -1,6 +1,8 @@
 package com.idearfly.timeline.websocket.com.idearfly.ini;
 
 import java.io.*;
+import java.net.URI;
+import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Properties;
 
@@ -10,7 +12,11 @@ public class IniFormatFile {
     private IniFormatFile() {}
 
     public static IniFormatFile classpath(String path) {
-        return load(IniFormatFile.class.getClassLoader().getResource(path).getPath());
+        URL url = IniFormatFile.class.getClassLoader().getResource(path);
+        if (url == null) {
+            return null;
+        }
+        return load(url.getPath());
     }
 
     public static IniFormatFile load(String path) {
