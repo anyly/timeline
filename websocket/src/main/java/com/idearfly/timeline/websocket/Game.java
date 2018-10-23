@@ -70,17 +70,57 @@ public abstract class Game<T extends Player> {
         return allPlayers.get(user);
     }
 
-    /////////////////广播类///////////////////////
+    //[广播类]
     /**
      * 广播所有在线连接
      * @param action
      * @param data
      */
     final public void emitAll(String action, JSONObject data) {
+        emitOthers(null, action, data);
+    }
+
+    /**
+     * 广播除了自己以外的其他玩家
+     * @param caller
+     * @param action
+     * @param data
+     */
+    final public void emitOthers(T caller, String action, JSONObject data) {
         LinkedList<T> list = new LinkedList(allPlayers.values());
         for (T player: list) {
+            if (player == caller) {
+                continue;
+            }
             try {
                 player.endpoint().emit(action, data);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    //[同步数据]
+    /**
+     * 同步所有人
+     * @param action
+     */
+    final public void syncAll(String action) {
+        syncOthers(null, action);
+    }
+
+    /**
+     * 同步除了自己以外的其他玩家
+     * @param caller
+     * @param action
+     */
+    final public void syncOthers(Player caller, String action) {
+        LinkedList<T> list = new LinkedList(allPlayers.values());
+        for (T player: list) {
+            if (player == caller) {
+                continue;
+            }
+            try {
+                player.endpoint().emit(action, this);
             } catch (Exception e) {
                 e.printStackTrace();
             }

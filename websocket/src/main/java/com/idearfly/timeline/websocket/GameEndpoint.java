@@ -27,12 +27,15 @@ public abstract class GameEndpoint extends Endpoint {
         }
         player = game.player(user);
         if (player != null) {
+            // 已经在游戏中,挤下线
             try {
                 player.endpoint().session.close();
             } catch (Exception e) {
 
             }
+            player.endpoint(null);
         } else {
+            // 新进入游戏
             try {
                 player = game.playerClass().newInstance();
             } catch (InstantiationException | IllegalAccessException e) {
@@ -42,6 +45,8 @@ public abstract class GameEndpoint extends Endpoint {
             player.setImg(img);
             game.join(player);
         }
+        // 允许更换头像
+        player.setImg(img);
         player.endpoint(this);
 
         return game;
