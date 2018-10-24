@@ -181,6 +181,7 @@ public abstract class BaseEndpoint<GameCenter extends BaseGameCenter> extends ja
             try {
                 String message = JSON.toJSONString(jsonObject, SerializerFeature.DisableCircularReferenceDetect);
                 session.getAsyncRemote().sendText(message);
+                Log.debug("emit session", session.getId(), "message", message);
             } catch (Exception e) {
                 Log.debug("emit session", session.getId(), "error", e.getCause());
                 e.printStackTrace();
