@@ -3,7 +3,7 @@ package com.idearfly.timeline;
 /**
  * 故事情节
  */
-public abstract class Plot {
+public abstract class Plot implements Stage {
     private String name;
 
     public Plot(String name) {

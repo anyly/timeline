@@ -12,9 +12,9 @@ public class Story {
     // 故事名称
     private String name;
     // 初始剧本
-    private LinkedList sequence = new LinkedList();
+    private LinkedList<Stage> sequence = new LinkedList();
     // 完成的部分
-    private LinkedList completed = new LinkedList();
+    private LinkedList<Stage> completed = new LinkedList();
 
     private Map<String, Plot> plotMap = new LinkedHashMap<>();
 
@@ -116,7 +116,7 @@ public class Story {
         // 下一步执行
         int nextIndex = completed.size();
         for (int i=nextIndex; i<sequence.size(); i++) {
-            Object handler = sequence.get(i);
+            Stage handler = sequence.get(i);
             if (handler instanceof Dispatcher) {
                 Dispatcher dispatcher = (Dispatcher)handler;
                 dispatcher.dispatch();
@@ -143,7 +143,7 @@ public class Story {
 
     public boolean checkAllowCondition() {
         try {
-            Object last = completed.getLast();
+            Stage last = completed.getLast();
             if (last instanceof Event) {
                 Event event = (Event)last;
                 if (!event.ending()) {
@@ -163,5 +163,10 @@ public class Story {
 
     public boolean isCompleted() {
         return completed.size() == sequence.size();
+    }
+
+    public String currentStage() {
+        Stage last = completed.getLast();
+        return last.getName();
     }
 }

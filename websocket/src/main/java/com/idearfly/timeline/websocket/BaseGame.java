@@ -5,24 +5,27 @@ import com.idearfly.timeline.Projector;
 import com.idearfly.timeline.Story;
 import com.idearfly.utils.GenericUtils;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 public abstract class BaseGame<Player extends BasePlayer> {
     private Class<Player> playerClass;
-    private JSONObject config;
-    private int no;
+    protected JSONObject config;
+    protected int no;
     Projector projector;
+
+    private Story story;
 
     protected BaseGame() {
         playerClass = GenericUtils.fromSuperclass(this.getClass(), BasePlayer.class);
         if (playerClass == null) {
             playerClass = (Class<Player>) BasePlayer.class;
         }
+
+        reload();
     }
 
-    private LinkedHashMap<String, Player> allPlayers = new LinkedHashMap<>();
+    protected LinkedHashMap<String, Player> allPlayers = new LinkedHashMap<>();
 
     //////////////////getter setter ////////////////////////
     public Class<Player> playerClass() {
@@ -37,11 +40,11 @@ public abstract class BaseGame<Player extends BasePlayer> {
         this.no = no;
     }
 
-    public JSONObject getConfig() {
+    public JSONObject config() {
         return config;
     }
 
-    public void setConfig(JSONObject config) {
+    public void config(JSONObject config) {
         this.config = config;
     }
 
@@ -124,5 +127,28 @@ public abstract class BaseGame<Player extends BasePlayer> {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * 呼叫投射,尝试
+     */
+    public void callProjector() {
+        projector.tryAgain();
+    }
+
+    /**
+     * 重新加载故事
+     */
+    public void reload() {
+        story = story();
+        projector.add(story);
+    }
+
+    /**
+     * 当前游戏总进度
+     * @return
+     */
+    public String getStage() {
+        return story.currentStage();
     }
 }

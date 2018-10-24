@@ -11,6 +11,15 @@ public class Projector {
         public void run() {
             Story story = null;
             for (;;) {
+                if (stories.size() == 0) {
+                    synchronized (thread) {
+                        try {
+                            thread.wait();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
                 int i=0;
                 while (i<stories.size()) {
                     try {
@@ -37,10 +46,16 @@ public class Projector {
 
     public Projector add(Story story){
         stories.add(story);
+        thread.notify();
         return this;
     }
 
     public Projector() {
         thread.start();
+    }
+
+    public Projector tryAgain() {
+        thread.notify();
+        return this;
     }
 }

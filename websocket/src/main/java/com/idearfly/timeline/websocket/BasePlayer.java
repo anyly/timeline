@@ -9,6 +9,14 @@ public class BasePlayer {
     private JSONObject data;
     private BaseEndpoint endpoint;
 
+    public void emit(String action, Object data) {
+        try {
+            endpoint.emit(action, data);
+        } catch (Exception e) {
+
+        }
+    }
+
     public String getUser() {
         return user;
     }

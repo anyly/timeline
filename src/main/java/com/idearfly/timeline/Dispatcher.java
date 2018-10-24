@@ -5,7 +5,7 @@ import java.util.LinkedHashSet;
 /**
  * 分发器，用于并发
  */
-public class Dispatcher {
+public class Dispatcher implements Stage {
     private String name;
     LinkedHashSet<Plot> multiLine = new LinkedHashSet<>();
     private LinkedHashSet<Event> toBeContinued = new LinkedHashSet<>();
@@ -56,5 +56,10 @@ public class Dispatcher {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 }
