@@ -3,6 +3,7 @@ package com.idearfly.timeline.websocket;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.idearfly.timeline.websocket.annotation.RequireLogin;
 
 import javax.websocket.CloseReason;
 import javax.websocket.EndpointConfig;
@@ -37,16 +38,21 @@ public abstract class BaseEndpoint<GameCenter extends BaseGameCenter> extends ja
                 JSONObject jsonObject = JSONObject.parseObject(message);
                 String action = jsonObject.getString("action");
                 Object data = jsonObject.get("data");
-                String httpPrefix = "http_";
-                if (action.startsWith(httpPrefix)) {
-                    // http请求
-                    String newAction = action.substring(httpPrefix.length());
-                    Object response = messageHandler(newAction, data);
-                    emit(action, response);
-                } else {
-                    // admit请求
-                    messageHandler(action, data);
+                try {
+                    String httpPrefix = "http_";
+                    if (action.startsWith(httpPrefix)) {
+                        // http请求
+                        String newAction = action.substring(httpPrefix.length());
+                        Object response = messageHandler(newAction, data);
+                        emit(action, response);
+                    } else {
+                        // admit请求
+                        messageHandler(action, data);
+                    }
+                } catch (RequireLoginException e) {
+                    emit("requireLogin", null);
                 }
+
             }
         });
     }
@@ -77,13 +83,20 @@ public abstract class BaseEndpoint<GameCenter extends BaseGameCenter> extends ja
             Method[] methods = thisClass.getMethods();
             for (Method method : methods) {
                 if (methodName.equals(method.getName())) {// 方法名一致
-                    Class returnType = method.getReturnType();
-                    if (returnType != null && (
-                            returnType.isAssignableFrom(Array.class) ||
-                                    returnType.isAssignableFrom(Set.class) ||
-                                    returnType.isAssignableFrom(List.class))) {
-                        throw new ClassCastException(methodName+"() return type is not allow Array/Set/List");
+//                    Class returnType = method.getReturnType();
+//                    if (returnType != null && (
+//                            returnType.isAssignableFrom(Array.class) ||
+//                                    returnType.isAssignableFrom(Set.class) ||
+//                                    returnType.isAssignableFrom(List.class))) {
+//                        throw new ClassCastException(methodName+"() return type is not allow Array/Set/List");
+//                    }
+                    RequireLogin requireLogin = method.getAnnotation(RequireLogin.class);
+                    if (requireLogin != null) {
+                        if (requireLogin()) {
+                            throw new RequireLoginException();
+                        }
                     }
+
                     Class[] parameterTypes = method.getParameterTypes();
                     Set set = new HashSet();
                     ArrayList parameter = new ArrayList(parameterTypes.length);
@@ -122,6 +135,10 @@ public abstract class BaseEndpoint<GameCenter extends BaseGameCenter> extends ja
 
         Log.debug("onMessage", "找不到"+methodName+"()方法！");
         return null;
+    }
+
+    protected boolean requireLogin() {
+        return user == null;
     }
 
     @Override

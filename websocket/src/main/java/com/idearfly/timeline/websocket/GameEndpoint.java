@@ -1,5 +1,7 @@
 package com.idearfly.timeline.websocket;
 
+import com.idearfly.timeline.websocket.annotation.RequireLogin;
+
 import javax.websocket.CloseReason;
 import javax.websocket.Session;
 
@@ -18,6 +20,7 @@ public abstract class GameEndpoint<GameCenter extends BaseGameCenter<Game>,
 
     }
 
+    @RequireLogin
     public Game onJoinGame(Integer no) {
         if (no == null) {
             return null;
