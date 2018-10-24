@@ -21,7 +21,8 @@
     <p id="error"></p>
 </div>
 <script>
-    var ws = new WebSocketClient('ws://192.168.1.5:8080/myEndpoint/123');
+    //var ws = new WebSocketClient('ws://192.168.1.5:8080/myEndpoint/123');
+    var ws = new WebSocketClient('ws://localhost:8080/myEndpoint/123');
     ws.onError(function (event) {
        document.querySelector('#error').innerHTML = JSON.stringify(event);
     });

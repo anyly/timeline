@@ -3,30 +3,29 @@ package com.idearfly.timeline.websocket;
 import com.alibaba.fastjson.JSONObject;
 import com.idearfly.timeline.Projector;
 import com.idearfly.timeline.Story;
+import com.idearfly.utils.GenericUtils;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
-public abstract class Game<T extends Player> {
-    private Class<T> playerClass = (Class<T>) Player.class;
+public abstract class BaseGame<Player extends BasePlayer> {
+    private Class<Player> playerClass;
     private JSONObject config;
     private int no;
     Projector projector;
 
-    protected Game() {
-        try {
-            ParameterizedType parameterizedType = (ParameterizedType) this.getClass().getGenericSuperclass();
-            playerClass = (Class<T>) parameterizedType.getActualTypeArguments()[0];
-        } catch (Exception e) {
-
+    protected BaseGame() {
+        playerClass = GenericUtils.fromSuperclass(this.getClass(), BasePlayer.class);
+        if (playerClass == null) {
+            playerClass = (Class<Player>) BasePlayer.class;
         }
     }
 
-    private LinkedHashMap<String, T> allPlayers = new LinkedHashMap<>();
+    private LinkedHashMap<String, Player> allPlayers = new LinkedHashMap<>();
 
     //////////////////getter setter ////////////////////////
-    public Class<T> playerClass() {
+    public Class<Player> playerClass() {
         return playerClass;
     }
 
@@ -54,7 +53,7 @@ public abstract class Game<T extends Player> {
      * 加入剧情
      * @param player
      */
-    public synchronized void join(T player) {
+    public synchronized void join(Player player) {
         allPlayers.put(player.getUser(), player);
     }
 
@@ -62,11 +61,11 @@ public abstract class Game<T extends Player> {
      * 离开剧情
      * @param player
      */
-    public synchronized void leave(T player) {
+    public synchronized void leave(Player player) {
         allPlayers.remove(player);
     }
 
-    public T player(String user) {
+    public Player player(String user) {
         return allPlayers.get(user);
     }
 
@@ -86,9 +85,9 @@ public abstract class Game<T extends Player> {
      * @param action
      * @param data
      */
-    final public void emitOthers(T caller, String action, JSONObject data) {
-        LinkedList<T> list = new LinkedList(allPlayers.values());
-        for (T player: list) {
+    final public void emitOthers(Player caller, String action, JSONObject data) {
+        LinkedList<Player> list = new LinkedList(allPlayers.values());
+        for (Player player: list) {
             if (player == caller) {
                 continue;
             }
@@ -113,9 +112,9 @@ public abstract class Game<T extends Player> {
      * @param caller
      * @param action
      */
-    final public void syncOthers(Player caller, String action) {
-        LinkedList<T> list = new LinkedList(allPlayers.values());
-        for (T player: list) {
+    final public void syncOthers(BasePlayer caller, String action) {
+        LinkedList<Player> list = new LinkedList(allPlayers.values());
+        for (Player player: list) {
             if (player == caller) {
                 continue;
             }

@@ -3,8 +3,9 @@ package com.idearfly.timeline.websocket;
 import javax.websocket.CloseReason;
 import javax.websocket.Session;
 
-public abstract class GameEndpoint extends Endpoint {
-    protected Game<Player> game;
+public abstract class GameEndpoint<GameCenter extends BaseGameCenter<Game>,
+        Game extends BaseGame<Player>, Player extends BasePlayer> extends BaseEndpoint<GameCenter> {
+    protected Game game;
     protected Player player;
 
     @Override

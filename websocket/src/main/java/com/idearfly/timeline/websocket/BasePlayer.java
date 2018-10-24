@@ -2,12 +2,12 @@ package com.idearfly.timeline.websocket;
 
 import com.alibaba.fastjson.JSONObject;
 
-public class Player {
+public class BasePlayer {
     private String user;
     private String img;
     private String mission;
     private JSONObject data;
-    private Endpoint endpoint;
+    private BaseEndpoint endpoint;
 
     public String getUser() {
         return user;
@@ -41,11 +41,11 @@ public class Player {
         this.data = data;
     }
 
-    public Endpoint endpoint() {
+    public BaseEndpoint endpoint() {
         return endpoint;
     }
 
-    public void endpoint(Endpoint endpoint) {
+    public void endpoint(BaseEndpoint endpoint) {
         this.endpoint = endpoint;
     }
 

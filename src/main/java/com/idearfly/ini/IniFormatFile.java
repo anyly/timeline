@@ -1,7 +1,6 @@
-package com.idearfly.timeline.websocket.com.idearfly.ini;
+package com.idearfly.ini;
 
 import java.io.*;
-import java.net.URI;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Properties;

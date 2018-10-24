@@ -11,17 +11,20 @@ import javax.websocket.Session;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public abstract class Endpoint extends javax.websocket.Endpoint {
+public abstract class BaseEndpoint<GameCenter extends BaseGameCenter> extends javax.websocket.Endpoint {
     protected GameCenter gameCenter;
     protected Session session;
     protected String user;
     protected String img;
 
+    public BaseEndpoint() {
+    }
 
     @Override
     public void onOpen(Session session, EndpointConfig config) {
@@ -49,7 +52,7 @@ public abstract class Endpoint extends javax.websocket.Endpoint {
     }
 
     private void load(EndpointConfig config) {
-        gameCenter = (GameCenter) config.getUserProperties().get(GameCenter.class.getName());
+        gameCenter = (GameCenter) config.getUserProperties().get(this.getClass().getName());
     }
 
 

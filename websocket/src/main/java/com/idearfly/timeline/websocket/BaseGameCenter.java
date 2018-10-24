@@ -2,22 +2,27 @@ package com.idearfly.timeline.websocket;
 
 import com.alibaba.fastjson.JSONObject;
 import com.idearfly.timeline.Projector;
+import com.idearfly.utils.GenericUtils;
 
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
 /**
  * 导演,编排故事
  */
-public class GameCenter {
-    private Class<? extends Game> gameClass;
+public abstract class BaseGameCenter<Game extends BaseGame> {
+    private Class<Game> gameClass;
     private Projector projector = new Projector();
     private LinkedHashMap<Integer, Game> allGames = new LinkedHashMap<>();
-    private LinkedHashMap<String, Endpoint> allEndpoints = new LinkedHashMap<>();
+    private LinkedHashMap<String, BaseEndpoint> allEndpoints = new LinkedHashMap<>();
 
-    public GameCenter(Class<? extends Game> gameClass) {
-        this.gameClass = gameClass;
+    public BaseGameCenter() {
+        gameClass = GenericUtils.fromSuperclass(this.getClass(), BaseGame.class);
+        if (gameClass == null) {
+            gameClass = (Class<Game>) DefaultGame.class;
+        }
     }
 
     private int currentNo = 1000;
@@ -48,11 +53,11 @@ public class GameCenter {
         allGames.remove(no);
     }
 
-    public void login(Endpoint endpoint) {
+    public void login(BaseEndpoint endpoint) {
         // 同一个user上锁
         String user = endpoint.getUser();
         synchronized (user.intern()) {
-            Endpoint old = allEndpoints.get(user);
+            BaseEndpoint old = allEndpoints.get(user);
             if (old != null) {
                 try {
                     old.session.close();
@@ -69,8 +74,8 @@ public class GameCenter {
     }
 
     public void emitAll(String action, Object data) {
-        LinkedHashSet<Endpoint> endpoints = new LinkedHashSet<>(allEndpoints.values());
-        for (Endpoint endpoint: endpoints) {
+        LinkedHashSet<BaseEndpoint> endpoints = new LinkedHashSet<>(allEndpoints.values());
+        for (BaseEndpoint endpoint: endpoints) {
             endpoint.emit(action, data);
         }
     }
