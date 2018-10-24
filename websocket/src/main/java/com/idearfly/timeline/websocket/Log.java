@@ -9,21 +9,7 @@ public class Log {
     }
 
     public static void debug(Class cls, Object...pieces) {
-        if (cls == null) {
-            cls = Log.class;
-        }
-        String packageName = cls.getPackage().getName();
-        StringBuffer stringBuffer = new StringBuffer("["+packageName+"]");
-        for (Object piece : pieces) {
-            stringBuffer.append(" > ");
-            try {
-                String s = JSON.toJSONString(piece);
-                stringBuffer.append(s);
-            } catch (Exception e) {
-                stringBuffer.append(piece);
-            }
-
-        }
+        StringBuffer stringBuffer = log(cls, pieces);
         System.out.println(stringBuffer.toString());
     }
 
@@ -32,6 +18,11 @@ public class Log {
     }
 
     public static void error(Class cls, Object...pieces) {
+        StringBuffer stringBuffer = log(cls, pieces);
+        System.err.println(stringBuffer.toString());
+    }
+
+    private static StringBuffer log(Class cls, Object...pieces) {
         if (cls == null) {
             cls = Log.class;
         }
@@ -39,6 +30,10 @@ public class Log {
         StringBuffer stringBuffer = new StringBuffer("["+packageName+"]");
         for (Object piece : pieces) {
             stringBuffer.append(" > ");
+            if (piece.getClass() == String.class) {
+                stringBuffer.append(piece);
+                continue;
+            }
             try {
                 String s = JSON.toJSONString(piece);
                 stringBuffer.append(s);
@@ -46,6 +41,6 @@ public class Log {
                 stringBuffer.append(piece);
             }
         }
-        System.err.println(stringBuffer.toString());
+        return stringBuffer;
     }
 }
