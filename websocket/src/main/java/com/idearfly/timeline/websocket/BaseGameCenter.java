@@ -41,7 +41,7 @@ public abstract class BaseGameCenter<Game extends BaseGame> {
         } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
-        game.setConfig(config);
+        game.config(config);
         currentNo++;
         game.setNo(currentNo);
         game.projector = projector;
