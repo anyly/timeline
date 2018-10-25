@@ -1,18 +1,16 @@
 package com.idearfly.timeline;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 /**
  * 故事
  */
-public class Story {
+public class Story implements Film {
     // 故事名称
     private String name;
     // 初始剧本
     private LinkedList<Stage> sequence = new LinkedList();
+
     // 完成的部分
     private LinkedList<Stage> completed = new LinkedList();
 
@@ -114,9 +112,8 @@ public class Story {
         }
 
         // 下一步执行
-        int nextIndex = completed.size();
-        for (int i=nextIndex; i<sequence.size(); i++) {
-            Stage handler = sequence.get(i);
+        Stage handler = null;
+        while ((handler = sequence.peek()) != null) {
             if (handler instanceof Dispatcher) {
                 Dispatcher dispatcher = (Dispatcher)handler;
                 dispatcher.dispatch();
@@ -137,36 +134,48 @@ public class Story {
                 plot.doing();
             }
             completed.add(handler);
+            sequence.remove();
         }
         return true;
     }
 
+    /**
+     * 判断是否满足当前条件，满足时进入下一步，不满足时暂停
+     * @return
+     */
     public boolean checkAllowCondition() {
-        try {
-            Stage last = completed.getLast();
-            if (last instanceof Event) {
-                Event event = (Event)last;
-                if (!event.ending()) {
-                    return false;
-                }
-            } else if (last instanceof Dispatcher) {
-                Dispatcher dispatcher = (Dispatcher)last;
-                if (!dispatcher.isCompleted()) {
-                    return false;
-                }
+        Stage current = sequence.peek();
+        if (current == null) {
+            return false;
+        }
+        if (current instanceof Event) {
+            Event event = (Event)current;
+            if (!event.ending()) {
+                return false;
             }
-        } catch (NoSuchElementException e) {
-
+        } else if (current instanceof Dispatcher) {
+            Dispatcher dispatcher = (Dispatcher)current;
+            if (!dispatcher.isCompleted()) {
+                return false;
+            }
         }
         return true;
     }
 
+    /**
+     * 是否已完成
+     * @return
+     */
     public boolean isCompleted() {
-        return completed.size() == sequence.size();
+        return sequence.isEmpty();
     }
 
+    /**
+     * 当前阶段
+     * @return
+     */
     public String currentStage() {
-        Stage last = completed.getLast();
-        return last.getName();
+        Stage current = sequence.peek();
+        return current.getName();
     }
 }

@@ -1,6 +1,7 @@
 package com.idearfly.timeline;
 
 import java.util.LinkedList;
+import java.util.ListIterator;
 
 /**
  * 放映室，用于运行故事
@@ -9,10 +10,10 @@ public class Projector {
     Thread thread = new Thread(new Runnable() {
         @Override
         public void run() {
-            Story story = null;
+            Film film = null;
             for (;;) {
-                if (stories.size() == 0) {
-                    synchronized (thread) {
+                synchronized (thread) {
+                    if (films.size() == 0) {
                         try {
                             thread.wait();
                         } catch (InterruptedException e) {
@@ -20,33 +21,34 @@ public class Projector {
                         }
                     }
                 }
-                int i=0;
-                while (i<stories.size()) {
+                ListIterator<Film> filmListIterator = films.listIterator();
+                while (filmListIterator.hasNext()) {
                     try {
-                        story = stories.get(i);
-                        if (story != null) {
-                            if (story.play()) {
-                                stories.remove(i);
+                        film = filmListIterator.next();
+                        if (film != null) {
+                            if (film.play()) {
+                                filmListIterator.remove();
                                 continue;
                             }
                         } else {
-                            stories.remove(i);
+                            filmListIterator.remove();
                             continue;
                         }
-                        i++;
                     } catch (Exception e) {
-
+                        e.printStackTrace();
                     }
                 }
             }
         }
     });
 
-    LinkedList<Story> stories = new LinkedList<>();
+    LinkedList<Film> films = new LinkedList<>();
 
-    public Projector add(Story story){
-        stories.add(story);
-        thread.notify();
+    public Projector add(Film film){
+        synchronized (thread) {
+            films.add(film);
+            thread.notify();
+        }
         return this;
     }
 
@@ -55,7 +57,9 @@ public class Projector {
     }
 
     public Projector tryAgain() {
-        thread.notify();
+        synchronized (thread) {
+            thread.notify();
+        }
         return this;
     }
 }

@@ -1,6 +1,7 @@
 package com.idearfly.timeline.websocket;
 
 import com.alibaba.fastjson.JSONObject;
+import com.idearfly.timeline.Film;
 import com.idearfly.timeline.Projector;
 import com.idearfly.timeline.Story;
 import com.idearfly.utils.GenericUtils;
@@ -12,7 +13,7 @@ public abstract class BaseGame<Player extends BasePlayer> {
     private Class<Player> playerClass;
     protected JSONObject config;
     protected int no;
-    Projector projector;
+    private Projector projector;
 
     private Story story;
 
@@ -46,6 +47,11 @@ public abstract class BaseGame<Player extends BasePlayer> {
 
     public void config(JSONObject config) {
         this.config = config;
+    }
+
+    public void projector(Projector projector) {
+        this.projector = projector;
+        this.projector.add(story);
     }
 
     ////////////////故事编排///////////////
@@ -137,11 +143,18 @@ public abstract class BaseGame<Player extends BasePlayer> {
     }
 
     /**
+     * 添加胶卷放映
+     * @param film
+     */
+    public void addFilm(Film film) {
+        projector.add(film);
+    }
+
+    /**
      * 重新加载故事
      */
     public void reload() {
         story = story();
-        projector.add(story);
     }
 
     /**

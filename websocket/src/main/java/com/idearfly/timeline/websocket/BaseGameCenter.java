@@ -1,6 +1,7 @@
 package com.idearfly.timeline.websocket;
 
 import com.alibaba.fastjson.JSONObject;
+import com.idearfly.timeline.Film;
 import com.idearfly.timeline.Projector;
 import com.idearfly.utils.GenericUtils;
 
@@ -44,7 +45,7 @@ public abstract class BaseGameCenter<Game extends BaseGame> {
         game.config(config);
         currentNo++;
         game.setNo(currentNo);
-        game.projector = projector;
+        game.projector(projector);
         allGames.put(currentNo, game);
         return game;
     }
@@ -78,5 +79,20 @@ public abstract class BaseGameCenter<Game extends BaseGame> {
         for (BaseEndpoint endpoint: endpoints) {
             endpoint.emit(action, data);
         }
+    }
+
+    /**
+     * 呼叫投射,尝试
+     */
+    public void callProjector() {
+        projector.tryAgain();
+    }
+
+    /**
+     * 添加胶卷放映
+     * @param film
+     */
+    public void addFilm(Film film) {
+        projector.add(film);
     }
 }
