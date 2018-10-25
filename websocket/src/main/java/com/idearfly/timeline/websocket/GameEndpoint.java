@@ -53,7 +53,16 @@ public abstract class GameEndpoint<GameCenter extends BaseGameCenter<Game>,
         player.setImg(img);
         player.endpoint(this);
 
+        resumeGame();
+
         return game;
+
+    }
+
+    /**
+     * 断线重连,恢复游戏
+     */
+    protected void resumeGame() {
 
     }
 

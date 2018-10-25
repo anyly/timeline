@@ -4,27 +4,30 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.idearfly.timeline.websocket.annotation.RequireLogin;
+import com.idearfly.utils.GenericUtils;
 
 import javax.websocket.CloseReason;
 import javax.websocket.EndpointConfig;
 import javax.websocket.MessageHandler;
 import javax.websocket.Session;
-import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public abstract class BaseEndpoint<GameCenter extends BaseGameCenter> extends javax.websocket.Endpoint {
+    private Class<GameCenter> gameCenterClass;
     protected GameCenter gameCenter;
     protected Session session;
     protected String user;
     protected String img;
 
     public BaseEndpoint() {
+        gameCenterClass = GenericUtils.fromSuperclass(this.getClass(), BaseGameCenter.class);
+        if (gameCenterClass == null) {
+            gameCenterClass = (Class<GameCenter>) DefaultGameCenter.class;
+        }
     }
 
     @Override
@@ -58,7 +61,7 @@ public abstract class BaseEndpoint<GameCenter extends BaseGameCenter> extends ja
     }
 
     private void load(EndpointConfig config) {
-        gameCenter = (GameCenter) config.getUserProperties().get(this.getClass().getName());
+        gameCenter = (GameCenter) config.getUserProperties().get(gameCenterClass.getName());
     }
 
 
@@ -179,7 +182,10 @@ public abstract class BaseEndpoint<GameCenter extends BaseGameCenter> extends ja
                 return;
             }
             try {
-                String message = JSON.toJSONString(jsonObject, SerializerFeature.DisableCircularReferenceDetect);
+                String message = JSON.toJSONString(jsonObject,
+                        //SerializerFeature.WriteClassName,
+                        SerializerFeature.DisableCircularReferenceDetect
+                );
                 session.getAsyncRemote().sendText(message);
                 Log.debug("emit session", session.getId(), "message", message);
             } catch (Exception e) {

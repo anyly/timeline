@@ -11,7 +11,6 @@ import javax.websocket.Endpoint;
 import javax.websocket.server.ServerEndpoint;
 import javax.websocket.server.ServerEndpointConfig;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
 import java.util.*;
 
 /**
@@ -21,7 +20,7 @@ public class ServerApplicationConfig implements javax.websocket.server.ServerApp
 
     @Override
     final public Set<ServerEndpointConfig> getEndpointConfigs(Set<Class<? extends Endpoint>> endpointClasses) {
-        Map<Class<BaseEndpoint>, BaseGameCenter> allGameCenters = new HashMap<>();
+        Map<String, BaseGameCenter> allGameCenters = new HashMap<>();
 
         Properties factory = null;
         Properties mapping = null;
@@ -80,13 +79,21 @@ public class ServerApplicationConfig implements javax.websocket.server.ServerApp
                 //
                 if (BaseEndpoint.class.isAssignableFrom(cls)) {
                     Class<BaseEndpoint> endpointClass = (Class<BaseEndpoint>) cls;
-                    BaseGameCenter gameCenter = allGameCenters.get(endpointClass);
-                    if (gameCenter == null) {
-                        gameCenter = gameCenter(endpointClass);
-                        allGameCenters.put(endpointClass, gameCenter);
+                    Class<? extends BaseGameCenter> gameCenterClass = GenericUtils.fromSuperclass(cls, BaseGameCenter.class);
+                    if (gameCenterClass == null) {
+                        gameCenterClass = DefaultGameCenter.class;
                     }
-                    String endpointName = endpointClass.getName();
-                    serverEndpointConfig.getUserProperties().put(endpointName, gameCenter);
+                    String gameConterName = gameCenterClass.getName();
+                    BaseGameCenter gameCenter = allGameCenters.get(gameConterName);
+                    if (gameCenter == null) {
+                        try {
+                            gameCenter = gameCenterClass.newInstance();
+                        } catch (InstantiationException | IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+                        allGameCenters.put(gameConterName, gameCenter);
+                    }
+                    serverEndpointConfig.getUserProperties().put(gameConterName, gameCenter);
                 }
 
                 result.add(serverEndpointConfig);
@@ -119,16 +126,6 @@ public class ServerApplicationConfig implements javax.websocket.server.ServerApp
             path = (new StringBuilder()).append(Character.toLowerCase(path.charAt(0))).append(path.substring(1)).toString();
         }
         return "/"+path;
-    }
-
-    private BaseGameCenter gameCenter(Class<? extends BaseEndpoint> cls) {
-        try {
-            Class<? extends BaseGameCenter> gameCenterClass = GenericUtils.fromSuperclass(cls, BaseGameCenter.class);
-            return gameCenterClass.newInstance();
-        } catch (Exception e) {
-
-        }
-        return new DefaultGameCenter();
     }
 
     @Override
