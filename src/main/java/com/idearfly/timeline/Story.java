@@ -111,6 +111,7 @@ public class Story implements Film {
             return false;
         }
 
+        sequence.remove();
         // 下一步执行
         Stage handler = null;
         while ((handler = sequence.peek()) != null) {

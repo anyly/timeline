@@ -103,27 +103,34 @@ public abstract class BaseEndpoint<GameCenter extends BaseGameCenter> extends ja
                     Class[] parameterTypes = method.getParameterTypes();
                     Set set = new HashSet();
                     ArrayList parameter = new ArrayList(parameterTypes.length);
+                    boolean warning = true;
                     for (Class parameterType : parameterTypes) {
                         if (session != null && !set.contains(session) &&
                                 (session.getClass() == parameterType
                                 || parameterType.isAssignableFrom(session.getClass()))) {
                             parameter.add(session);
                             set.add(session);
+                            warning = false;
                         } else if (action != null && !set.contains(action) &&
                                 (action.getClass() == parameterType
                                 || parameterType.isAssignableFrom(action.getClass()))) {
                             parameter.add(action);
                             set.add(action);
+                            warning = false;
                         } else if (data != null && !set.contains(data) &&
                                 (data.getClass() == parameterType
                                 || parameterType.isAssignableFrom(data.getClass()))) {
                             parameter.add(data);
                             set.add(data);
+                            warning = false;
                         } else {
                             parameter.add(null);
                         }
                     }
 
+                    if (warning) {
+                        Log.debug(methodName + " has not match " + JSON.toJSONString(parameterTypes));
+                    }
                     Object[] array = parameter.toArray();
                     Object returnObject = method.invoke(this, array);
                     Log.debug("onMessage", methodName+" invoke", array);
