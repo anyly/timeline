@@ -145,13 +145,6 @@ public abstract class BaseGame<Player extends BasePlayer> {
     }
 
     /**
-     * 呼叫投射,尝试
-     */
-    public void callProjector() {
-        projector.tryAgain();
-    }
-
-    /**
      * 添加胶卷放映
      * @param film
      */

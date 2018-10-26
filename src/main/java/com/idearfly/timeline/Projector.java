@@ -1,7 +1,6 @@
 package com.idearfly.timeline;
 
-import java.util.LinkedList;
-import java.util.ListIterator;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * 放映室，用于运行故事
@@ -12,26 +11,14 @@ public class Projector {
         public void run() {
             Film film = null;
             for (;;) {
-                synchronized (thread) {
-                    if (films.size() == 0) {
-                        try {
-                            thread.wait();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                boolean needRemove = false;
-                ListIterator<Film> filmListIterator = films.listIterator();
-                while (filmListIterator.hasNext()) {
+                while ((film = films.peek()) != null) {
                     try {
-                        film = filmListIterator.next();
                         if (film == null) {
-                            needRemove = true;
+                            films.take();
                             break;
                         } else {
                             if (film.play()) {
-                                needRemove = true;
+                                films.take();
                                 break;
                             }
                         }
@@ -39,32 +26,19 @@ public class Projector {
                         e.printStackTrace();
                     }
                 }
-                if (needRemove) {
-                    filmListIterator.remove();
-                }
             }
         }
     });
 
-    LinkedList<Film> films = new LinkedList<>();
+    LinkedBlockingQueue<Film> films = new LinkedBlockingQueue<>();
 
     public Projector add(Film film){
-        synchronized (thread) {
-            films.add(film);
-            thread.notify();
-        }
+        films.add(film);
         return this;
     }
 
     public Projector(String name) {
         thread.setName(name + " " + Projector.class.getSimpleName());
         thread.start();
-    }
-
-    public Projector tryAgain() {
-        synchronized (thread) {
-            thread.notify();
-        }
-        return this;
     }
 }

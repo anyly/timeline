@@ -6,7 +6,6 @@ import com.idearfly.timeline.Projector;
 import com.idearfly.utils.GenericUtils;
 
 import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
@@ -82,13 +81,6 @@ public abstract class BaseGameCenter<Game extends BaseGame> {
         for (BaseEndpoint endpoint: endpoints) {
             endpoint.emit(action, data);
         }
-    }
-
-    /**
-     * 呼叫投射,尝试
-     */
-    public void callProjector() {
-        projector.tryAgain();
     }
 
     /**
