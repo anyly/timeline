@@ -163,7 +163,11 @@ public abstract class BaseEndpoint<GameCenter extends BaseGameCenter> extends ja
     @Override
     public void onError(Session session, Throwable thr) {
         super.onError(session, thr);
-        Log.debug("onError session", session.getId(), "cause", thr.getCause());
+        try {
+            Log.debug("onError session", session.getId(), "cause", thr.getCause());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         thr.printStackTrace();
 //        try {
 //            session.close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "NORMAL CLOSURE"));
@@ -193,7 +197,9 @@ public abstract class BaseEndpoint<GameCenter extends BaseGameCenter> extends ja
                         //SerializerFeature.WriteClassName,
                         SerializerFeature.DisableCircularReferenceDetect
                 );
-                session.getAsyncRemote().sendText(message);
+                //session.getAsyncRemote().sendText(message);
+                // java.lang.IllegalStateException: The remote endpoint was in state [TEXT_FULL_WRITING] which is an invalid state for called method
+                session.getBasicRemote().sendText(message);
                 Log.debug("emit session", session.getId(), "message", message);
             } catch (Exception e) {
                 Log.debug("emit session", session.getId(), "error", e.getCause());

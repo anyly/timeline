@@ -111,7 +111,7 @@ public class Story implements Film {
             return false;
         }
 
-        sequence.remove();
+        sequence.poll();
         // 下一步执行
         Stage handler = null;
         while ((handler = sequence.peek()) != null) {
@@ -135,7 +135,7 @@ public class Story implements Film {
                 plot.doing();
             }
             completed.add(handler);
-            sequence.remove();
+            sequence.poll();
         }
         return true;
     }
@@ -177,6 +177,9 @@ public class Story implements Film {
      */
     public String currentStage() {
         Stage current = sequence.peek();
+        if (current == null) {
+            return null;
+        }
         return current.getName();
     }
 }

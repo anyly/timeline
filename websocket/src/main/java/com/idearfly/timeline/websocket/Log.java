@@ -30,7 +30,10 @@ public class Log {
         StringBuffer stringBuffer = new StringBuffer("["+packageName+"]");
         for (Object piece : pieces) {
             stringBuffer.append(" > ");
-            if (piece.getClass() == String.class) {
+            if (piece == null) {
+                stringBuffer.append("null");
+                continue;
+            } else if (piece.getClass() == String.class) {
                 stringBuffer.append(piece);
                 continue;
             }

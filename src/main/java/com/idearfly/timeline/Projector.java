@@ -21,22 +21,26 @@ public class Projector {
                         }
                     }
                 }
+                boolean needRemove = false;
                 ListIterator<Film> filmListIterator = films.listIterator();
                 while (filmListIterator.hasNext()) {
                     try {
                         film = filmListIterator.next();
-                        if (film != null) {
-                            if (film.play()) {
-                                filmListIterator.remove();
-                                continue;
-                            }
+                        if (film == null) {
+                            needRemove = true;
+                            break;
                         } else {
-                            filmListIterator.remove();
-                            continue;
+                            if (film.play()) {
+                                needRemove = true;
+                                break;
+                            }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                }
+                if (needRemove) {
+                    filmListIterator.remove();
                 }
             }
         }
@@ -52,7 +56,8 @@ public class Projector {
         return this;
     }
 
-    public Projector() {
+    public Projector(String name) {
+        thread.setName(name + " " + Projector.class.getSimpleName());
         thread.start();
     }
 

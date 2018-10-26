@@ -8,6 +8,7 @@ import com.idearfly.utils.GenericUtils;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.ListIterator;
 
 public abstract class BaseGame<Player extends BasePlayer> {
     private Class<Player> playerClass;
@@ -51,7 +52,9 @@ public abstract class BaseGame<Player extends BasePlayer> {
 
     public void projector(Projector projector) {
         this.projector = projector;
-        this.projector.add(story);
+        if (story != null) {
+            this.projector.add(story);
+        }
     }
 
     ////////////////故事编排///////////////
@@ -96,7 +99,9 @@ public abstract class BaseGame<Player extends BasePlayer> {
      */
     final public void emitOthers(Player caller, String action, JSONObject data) {
         LinkedList<Player> list = new LinkedList(allPlayers.values());
-        for (Player player: list) {
+        ListIterator<Player> listIterator = list.listIterator();
+        while (listIterator.hasNext()) {
+            Player player = listIterator.next();
             if (player == caller) {
                 continue;
             }
@@ -123,12 +128,16 @@ public abstract class BaseGame<Player extends BasePlayer> {
      */
     final public void syncOthers(BasePlayer caller, String action) {
         LinkedList<Player> list = new LinkedList(allPlayers.values());
-        for (Player player: list) {
+        ListIterator<Player> listIterator = list.listIterator();
+        while (listIterator.hasNext()) {
+            Player player = listIterator.next();
             if (player == caller) {
                 continue;
             }
             try {
-                player.endpoint().emit(action, this);
+                if (player != null && player.endpoint() != null) {
+                    player.endpoint().emit(action, this);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -147,7 +156,19 @@ public abstract class BaseGame<Player extends BasePlayer> {
      * @param film
      */
     public void addFilm(Film film) {
-        projector.add(film);
+        if (this.projector != null) {
+            projector.add(film);
+        }
+    }
+
+    /**
+     * 重新开始游戏
+     */
+    public void replay() {
+        reload();
+        if (this.projector != null) {
+            projector.add(story);
+        }
     }
 
     /**
@@ -164,4 +185,5 @@ public abstract class BaseGame<Player extends BasePlayer> {
     public String getStage() {
         return story.currentStage();
     }
+
 }

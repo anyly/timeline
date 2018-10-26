@@ -15,7 +15,7 @@ import java.util.LinkedHashSet;
  */
 public abstract class BaseGameCenter<Game extends BaseGame> {
     private Class<Game> gameClass;
-    private Projector projector = new Projector();
+    private Projector projector;
     private LinkedHashMap<Integer, Game> allGames = new LinkedHashMap<>();
     private LinkedHashMap<String, BaseEndpoint> allEndpoints = new LinkedHashMap<>();
 
@@ -45,6 +45,9 @@ public abstract class BaseGameCenter<Game extends BaseGame> {
         game.config(config);
         currentNo++;
         game.setNo(currentNo);
+        if (projector == null) {
+            projector = new Projector(this.getClass().getSimpleName());
+        }
         game.projector(projector);
         allGames.put(currentNo, game);
         return game;
