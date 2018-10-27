@@ -164,7 +164,7 @@ public abstract class BaseEndpoint<GameCenter extends BaseGameCenter> extends ja
     public void onError(Session session, Throwable thr) {
         super.onError(session, thr);
         try {
-            Log.debug("onError session", session.getId(), "cause", thr.getCause());
+            Log.debug("onError session", session.getId(), "cause", thr.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
         }

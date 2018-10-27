@@ -8,6 +8,7 @@ import com.idearfly.utils.GenericUtils;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 
 public abstract class BaseGame<Player extends BasePlayer> {
@@ -118,15 +119,15 @@ public abstract class BaseGame<Player extends BasePlayer> {
      * @param action
      */
     final public void syncAll(String action) {
-        syncOthers(null, action);
+        syncOthers(action, null);
     }
 
     /**
-     * 同步除了自己以外的其他玩家
+     * 同步所有玩家, 排除掉指定的
      * @param caller
      * @param action
      */
-    final public void syncOthers(BasePlayer caller, String action) {
+    final public void syncOthers(String action, Player caller) {
         LinkedList<Player> list = new LinkedList(allPlayers.values());
         ListIterator<Player> listIterator = list.listIterator();
         while (listIterator.hasNext()) {
@@ -134,6 +135,30 @@ public abstract class BaseGame<Player extends BasePlayer> {
             if (player == caller) {
                 continue;
             }
+            try {
+                if (player != null && player.endpoint() != null) {
+                    player.endpoint().emit(action, this);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 同步所有玩家, 排除掉指定的
+     * @param excludes
+     * @param action
+     */
+    final public void syncExclude(String action, List<Player> excludes) {
+        LinkedList<Player> list = new LinkedList(allPlayers.values());
+        ListIterator<Player> listIterator = list.listIterator();
+        while (listIterator.hasNext()) {
+            Player player = listIterator.next();
+            if (excludes.contains(player)) {
+                continue;
+            }
+
             try {
                 if (player != null && player.endpoint() != null) {
                     player.endpoint().emit(action, this);
