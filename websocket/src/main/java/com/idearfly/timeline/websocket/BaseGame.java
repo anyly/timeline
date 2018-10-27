@@ -88,7 +88,7 @@ public abstract class BaseGame<Player extends BasePlayer> {
      * @param action
      * @param data
      */
-    final public void emitAll(String action, JSONObject data) {
+    final public void emitAll(String action, Object data) {
         emitOthers(null, action, data);
     }
 
@@ -98,7 +98,7 @@ public abstract class BaseGame<Player extends BasePlayer> {
      * @param action
      * @param data
      */
-    final public void emitOthers(Player caller, String action, JSONObject data) {
+    final public void emitOthers(Player caller, String action, Object data) {
         LinkedList<Player> list = new LinkedList(allPlayers.values());
         ListIterator<Player> listIterator = list.listIterator();
         while (listIterator.hasNext()) {
