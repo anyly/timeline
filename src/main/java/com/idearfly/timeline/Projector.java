@@ -1,6 +1,6 @@
 package com.idearfly.timeline;
 
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.*;
 
 /**
  * 放映室，用于运行故事
@@ -9,31 +9,45 @@ public class Projector {
     Thread thread = new Thread(new Runnable() {
         @Override
         public void run() {
-            Film film = null;
             for (;;) {
-                while ((film = films.peek()) != null) {
+                synchronized (thread) {
+                    if (films.size() == 0) {
+                        try {
+                            thread.wait();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                int i=0;
+                while (i < films.size()) {
+                    Film film = films.get(i);
                     try {
                         if (film == null) {
-                            films.take();
-                            break;
+                            films.remove(i);
+                            continue;
                         } else {
                             if (film.play()) {
-                                films.take();
-                                break;
+                                films.remove(i);
+                                continue;
                             }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                    i++;
                 }
             }
         }
     });
 
-    LinkedBlockingQueue<Film> films = new LinkedBlockingQueue<>();
+    ArrayList<Film> films = new ArrayList<>();
 
     public Projector add(Film film){
-        films.add(film);
+        synchronized (thread) {
+            films.add(film);
+            thread.notify();
+        }
         return this;
     }
 
