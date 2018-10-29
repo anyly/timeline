@@ -21,7 +21,6 @@
     }
 
     window.WebSocketClient = function(url) {
-        var self = this;
         var websocket = null;
         var httplistener = {};
         var messagelistener = {};
@@ -61,9 +60,6 @@
             try {
                 var action = data.action;
                 var object = data["data"];
-                if (action == 'requireLogin') {
-                    self.requireLogin();
-                } else
                 if (action.indexOf(httpPrefix) == 0) {
                     httplistener[action](object);
                 } else {
@@ -229,10 +225,6 @@
             return this;
         };
         return this;
-    };
-
-    WebSocketClient.prototype.requireLogin = function () {
-        alert('请先登录');
     };
 
     /**
