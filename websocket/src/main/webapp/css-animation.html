@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>css动画测试</title>
+    <script src="js/css-animation.js"></script>
+    <style>
+        .block>* {
+            width:200px;
+            height:200px;
+            text-align: center;
+            line-height: 200px;
+        }
+
+        /*@-webkit-keyframes css-animation-0 {
+            100% { transform: translate(581px, 457px); }
+        }*/
+    </style>
+</head>
+<body>
+
+<div class="block" style="width:100%;height: 300px;">
+    <div style="position: absolute;left:0;top:0;background-color: green; /*animation: css-animation-0 1s ease;*/" id="a">A</div>
+    <div style="position: absolute;right:0;bottom:0;background-color: red;"  id="b">B</div>
+</div>
+<p>
+    <button onclick="CSSAnimation.move('#a', '#b', function() {
+        document.querySelector('#tips').innerHTML = 'a移动到b';
+    });">移动</button>
+    <button onclick="CSSAnimation.move('#a', '#b', function() {
+        document.querySelector('#tips').innerHTML = 'a与b交换';
+    });">交换</button>
+</p>
+<p id="tips"></p>
+<script>
+</script>
+</body>
+</html>

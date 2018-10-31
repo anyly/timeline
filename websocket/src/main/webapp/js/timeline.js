@@ -1,4 +1,4 @@
-var timeline = new Timeline()
+/*var timeline = new Timeline()
     .then(a, b, function () {
         a;
         this.a;
@@ -39,5 +39,4 @@ function Timeline() {
     };
     returnFunction;
 }
-
-new Animation()
+*/
