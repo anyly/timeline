@@ -1,20 +1,18 @@
-/*var timeline = new Timeline()
-    .then(a, b, function () {
-        a;
-        this.a;
-    })//串行
-    .meanwhile()//并行
-;
-
 function Timeline() {
     var self = this;
     var plots = [];
     var datas = [];
-    this.next = function() {
-        var plot = plots.shift();
-        var data = datas.shift();
+
+    self.stop = function() {
+        var e = new Error();
+        e.name = 'timeline_stop';
+        throw new e;
+    };
+    self.next = function() {
+        var plot = plots[0];
+        var data = datas[0];
         if (!plot) {
-            return;
+            return self;
         }
         plot.apply(self, data);
     };
@@ -28,15 +26,30 @@ function Timeline() {
             params.push(arguments[i]);
         }
 
+        if (plots.length == 0) {
+            plot.apply(self, params);
+        }
         plots.push(plot);
         datas.push(params);
-        if (plots.length == 1) {
+        return self;
+    };
+    self.asyncFunction = function (callback) {
+        var fun = function () {
+            try {
+                if (callback) {
+                    callback.apply(self, arguments);
+                }
+            } catch (e) {
+                if (e.name == 'timeline_stop') {
+
+                } else {
+                    throw e;
+                }
+            }
+            plots.shift();
+            datas.shift();
             self.next();
-        }
+        };
+        return fun;
     };
-    self.returnFunction = function () {
-        return {};
-    };
-    returnFunction;
 }
-*/

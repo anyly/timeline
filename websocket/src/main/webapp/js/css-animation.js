@@ -74,7 +74,7 @@
                 return;
             }
         }
-        sheet.insertRule('@-webkit-keyframes '+name+'{'+cssText+'}', 0);
+        sheet.insertRule('@-webkit-keyframes '+name+' {'+cssText+'} ', 0);
     };
     CSSEditor.removeFrame = function(name) {
         var sheet = this.styleSheet();
@@ -92,8 +92,92 @@
 
 (function () {
     var genId = 0;
+    var prefix = 'css-animation-';
+    window.createAnimation = function (ele, cssText, playStyle, callback) {
+        if (!cssText) {
+            return;
+        }
+        var id = this;
+        if (typeof(this) != 'string') {
+            id = prefix+(genId++);
+        }
+        CSSEditor.addFrame(id, cssText);
+
+        ele.style.animation = id + ' ' + playStyle;
+
+        var call = {
+            id : id,
+            clear: function () {
+                ele.style.animation = '';
+                CSSEditor.removeFrame(id);
+            }
+        };
+
+        ele.addEventListener('animationend', function () {
+            if (callback) {
+                callback.apply(call, arguments);
+            }
+            if (playStyle.indexOf('forwards')<0) {
+                call.clear();
+            }
+        });
+        return id;
+    };
     window.CSSAnimation = {};
-    CSSAnimation.swap = function (a, b) {
+    CSSAnimation.float = function (a, callback, playStyle) {
+        if (typeof(a) == 'string') {
+            a = document.querySelector(a);
+        }
+
+        if (!playStyle) {
+            playStyle = '1s ease-in-out forwards';
+        }
+
+        return createAnimation(
+            a,
+            '0% {box-shadow: 0px 0px 0px #000;}'+
+            '100% {transform: translate(10px, 0px); box-shadow: -10px 10px 5px #888888;}',
+            playStyle,
+            callback
+        );
+    };
+    CSSAnimation.bump = function (a, callback, playStyle) {
+        if (typeof(a) == 'string') {
+            a = document.querySelector(a);
+        }
+
+        if (!playStyle) {
+            playStyle = '4s ease both alternate';
+        }
+
+        return createAnimation(
+            a,
+            '0% {transform: scale(1);}' +
+            '30% {transform: scale(1.3);}' +
+            '66% {transform: scale(1.3);}' +
+            '100% {transform: scale(1);}',
+            playStyle,
+            callback
+        );
+    };
+    CSSAnimation.gleam = function (a, callback, playStyle) {
+        if (typeof(a) == 'string') {
+            a = document.querySelector(a);
+        }
+
+        if (!playStyle) {
+            playStyle = '1s ease both alternate 5';
+        }
+
+        return createAnimation(
+            a,
+            '0% { opacity:1; } ' +
+            '100% { opacity:0; }',
+            playStyle,
+            callback
+        );
+    };
+    CSSAnimation.swap = function (a, b, callback, playStyle) {
         if (typeof(a) == 'string') {
             a = document.querySelector(a);
         }
@@ -106,25 +190,43 @@
         var x2 = b.offsetLeft;
         var y2 = b.offsetTop;
 
-        var x = x2-x1;
-        var y = y2-y1;
+        if (!playStyle) {
+            playStyle = '2.5s ease-in-out forwards';
+        }
 
-        var id = 'css-animation-'+(genId++);
-        var cssText = '';
-        //cssText += '0%{}\n';
-        cssText += '100% { transform: translate('+x+'px,'+y+'px); }';
-        CSSEditor.addFrame(id, cssText);
-        a.style.animation = id + ' 1s ease';
+        var count = 0;
 
-        a.addEventListener('animationend', function () {
-            if (callback) {
-                callback.apply(this, arguments);
+
+
+        createAnimation(
+            a,
+            '0% {box-shadow: 0px 0px 0px #000;}'+
+            '15%, 30% {transform: translate(10px, 0px); box-shadow: -10px 10px 5px #888888;}'+
+            '75%, 90% { transform: translate('+(x2-x1)+'px,'+(y2-y1)+'px); }'+
+            '100% { transform: translate('+(x2-x1)+'px,'+(y2-y1)+'px); box-shadow: 0px 0px 0px #000;}',
+            playStyle,
+            function () {
+                if (++count == 2) {
+                    callback.apply(this, arguments);
+                }
+                this.clear();
             }
-            a.style.animation = '';
-            CSSEditor.removeFrame(id);
-        });
+        );
 
-
+        createAnimation(
+            b,
+            '0% {box-shadow: 0px 0px 0px #000;}'+
+            '15%, 30% {transform: translate(10px, 0px); box-shadow: -10px 10px 5px #888888;}'+
+            '75%, 90% { transform: translate('+(x1-x2)+'px,'+(y1-y2)+'px); }'+
+            '100% { transform: translate('+(x1-x2)+'px,'+(y1-y2)+'px); box-shadow: 0px 0px 0px #000;}',
+            playStyle,
+            function () {
+                if (++count == 2) {
+                    callback.apply(this, arguments);
+                }
+                this.clear();
+            }
+        );
     };
     CSSAnimation.move = function (a, b, callback) {
         if (typeof(a) == 'string') {
@@ -139,21 +241,11 @@
         var x2 = b.offsetLeft;
         var y2 = b.offsetTop;
 
-        var x = x2-x1;
-        var y = y2-y1;
-
-        var id = 'css-animation-'+(genId++);
-        var cssText = '';
-        //cssText += '0%{}\n';
-        cssText += '100% { transform: translate('+x+'px,'+y+'px); }';
-        CSSEditor.addFrame(id, cssText);
-        a.style.animation = id + ' 1s ease';
-        a.addEventListener('animationend', function () {
-            if (callback) {
-                callback.apply(this, arguments);
-            }
-            a.style.animation = '';
-            CSSEditor.removeFrame(id);
-        });
+        createAnimation(
+            a,
+            '100% { transform: translate('+(x2-x1)+'px,'+(y2-y1)+'px); }',
+            '1s ease',
+            callback
+        );
     };
 })();

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>css动画测试</title>
+    <script src="js/timeline.js"></script>
     <script src="js/css-animation.js"></script>
     <style>
         .block>* {
@@ -20,19 +21,66 @@
 <body>
 
 <div class="block" style="width:100%;height: 300px;">
-    <div style="position: absolute;left:0;top:0;background-color: green; /*animation: css-animation-0 1s ease;*/" id="a">A</div>
-    <div style="position: absolute;right:0;bottom:0;background-color: red;"  id="b">B</div>
+    <div style="position: absolute;left:20px;top:20px;background-color: green; /*animation: css-animation-0 1s ease;*/" id="a">A</div>
+    <div style="position: absolute;right:20px;bottom:20px;background-color: red;"  id="b">B</div>
 </div>
 <p>
     <button onclick="CSSAnimation.move('#a', '#b', function() {
         document.querySelector('#tips').innerHTML = 'a移动到b';
     });">移动</button>
-    <button onclick="CSSAnimation.move('#a', '#b', function() {
+    <button onclick="CSSAnimation.swap('#a', '#b', function() {
         document.querySelector('#tips').innerHTML = 'a与b交换';
     });">交换</button>
+    <button onclick="CSSAnimation.gleam('#a', function() {
+        document.querySelector('#tips').innerHTML = 'a闪烁了';
+    });">闪烁</button>
+    <button onclick="CSSAnimation.bump('#a', function() {
+        document.querySelector('#tips').innerHTML = 'a凸大了';
+    });">凸大</button>
+    <button onclick="CSSAnimation.float('#a', function() {
+        document.querySelector('#tips').innerHTML = 'a漂浮了';
+    });">漂浮</button>
+    <button onclick="allAni();">综合测试</button>
 </p>
 <p id="tips"></p>
 <script>
+    function allAni() {
+        var out = 0;
+        function addup() {
+            setTimeout(function () {
+                out++;
+            });
+        }
+        addup();
+        var timeline = new Timeline()
+            .then(out, function one(out) {
+                addup();
+                CSSAnimation.move('#a', '#b', this.asyncFunction(function() {
+                    document.querySelector('#tips').innerHTML = '当前运行,第' + out + '个动画';
+                }));
+            })
+            .then(out, function two(out) {
+                addup();
+                CSSAnimation.swap('#a', '#b', this.asyncFunction(function() {
+                    document.querySelector('#tips').innerHTML = '当前运行,第' + out + '个动画';
+                }));
+            })
+            .then(out, function three(out) {
+                addup();
+                CSSAnimation.gleam('#a', this.asyncFunction(function() {
+                    document.querySelector('#tips').innerHTML = '当前运行,第' + out + '个动画';
+                }));
+            })
+            .then(out, function four(out) {
+                addup();
+                CSSAnimation.float('#a', this.asyncFunction(function() {
+                    document.querySelector('#tips').innerHTML = '当前运行,第' + out + '个动画';
+                }));
+            })
+        ;
+    }
+
+
 </script>
 </body>
 </html>
