@@ -93,6 +93,7 @@
 (function () {
     var genId = 0;
     var prefix = 'css-animation-';
+    var handlers = {};
     window.createAnimation = function (ele, cssText, playStyle, callback) {
         if (!cssText) {
             return;
@@ -113,7 +114,8 @@
             }
         };
 
-        var handler = function () {
+        var handler = handlers[id] = function () {
+            console.debug(id+'animationend');
             ele.removeEventListener("animationend",handler, false);
             if (playStyle.indexOf('forwards')<0) {
                 call.clear();
@@ -122,7 +124,19 @@
                 callback.apply(call, arguments);
             }
         };
+
         ele.addEventListener('animationend', handler, false);
+
+        var f1 = function (e) {
+            ele.removeEventListener('animationiteration', f1);
+            console.debug(id + ' '+JSON.stringify(e));
+        };
+        ele.addEventListener('animationiteration', f1);
+        var f2 = function (e) {
+            ele.removeEventListener('animationstart', f2);
+            console.debug(id + 'animationstart');
+        };
+        ele.addEventListener('animationstart', f2, false);
         return id;
     };
     window.CSSAnimation = {};

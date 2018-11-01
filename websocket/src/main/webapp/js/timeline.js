@@ -14,6 +14,7 @@ function Timeline() {
         if (!plot) {
             return self;
         }
+        //console.debug('name: '+plot.name);
         plot.apply(self, data);
     };
     self.then = function (params, fun) {
@@ -51,9 +52,14 @@ function Timeline() {
             if (callback) {
                 callback.apply(this, arguments);
             }
+            //console.debug('async back='+plots[0].name);
 
             if (++count==meanwhiles.length) {
-                self.next();
+                setTimeout(function () {
+                    plots.shift();
+                    datas.shift();
+                    self.next();
+                });
             }
         };
 
@@ -83,6 +89,7 @@ function Timeline() {
                     throw e;
                 }
             }
+            //console.debug('async back='+plots[0].name);
             plots.shift();
             datas.shift();
             self.next();
