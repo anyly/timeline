@@ -113,14 +113,16 @@
             }
         };
 
-        ele.addEventListener('animationend', function () {
-            if (callback) {
-                callback.apply(call, arguments);
-            }
+        var handler = function () {
+            ele.removeEventListener("animationend",handler, false);
             if (playStyle.indexOf('forwards')<0) {
                 call.clear();
             }
-        });
+            if (callback) {
+                callback.apply(call, arguments);
+            }
+        };
+        ele.addEventListener('animationend', handler, false);
         return id;
     };
     window.CSSAnimation = {};
@@ -206,10 +208,10 @@
             '100% { transform: translate('+(x2-x1)+'px,'+(y2-y1)+'px); box-shadow: 0px 0px 0px #000;}',
             playStyle,
             function () {
+                this.clear();
                 if (++count == 2) {
                     callback.apply(this, arguments);
                 }
-                this.clear();
             }
         );
 
@@ -221,10 +223,10 @@
             '100% { transform: translate('+(x1-x2)+'px,'+(y1-y2)+'px); box-shadow: 0px 0px 0px #000;}',
             playStyle,
             function () {
+                this.clear();
                 if (++count == 2) {
                     callback.apply(this, arguments);
                 }
-                this.clear();
             }
         );
     };

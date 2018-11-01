@@ -16,21 +16,58 @@ function Timeline() {
         }
         plot.apply(self, data);
     };
-    self.then = function (params, plot) {
+    self.then = function (params, fun) {
         if (arguments.length == 0) {
             throw new ReferenceError('Timeline.then not arguments');
         }
-        plot = arguments[arguments.length-1];
-        params = [];
+        var plot = arguments[arguments.length-1];
+        var data = [];
         for (var i=0; i<arguments.length-1; i++) {
-            params.push(arguments[i]);
+            data.push(arguments[i]);
         }
 
-        if (plots.length == 0) {
-            plot.apply(self, params);
+        plots.push(plot);
+        datas.push(data);
+
+        if (plots.length == 1) {
+            self.next();
         }
+        return self;
+    };
+    self.meanwhile = function (data) {
+        var params = [];
+        var meanwhiles = [];
+        var count = 0;
+        for (var i=0; i<arguments.length;i++) {
+            var item = arguments[i];
+            if (typeof(item) == 'function') {
+                meanwhiles.push(item);
+            } else {
+                params.push(item);
+            }
+        }
+
+        var fun = function (callback) {
+            if (callback) {
+                callback.apply(this, arguments);
+            }
+
+            if (++count==meanwhiles.length) {
+                self.next();
+            }
+        };
+
+        var plot = function () {
+            for (var i=0; i<meanwhiles.length; i++) {
+                meanwhiles[i].apply({
+                    stop: self.stop,
+                    asyncFunction: fun
+                }, params);
+            }
+        };
         plots.push(plot);
         datas.push(params);
+
         return self;
     };
     self.asyncFunction = function (callback) {

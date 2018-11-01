@@ -34,7 +34,7 @@
     <button onclick="CSSAnimation.gleam('#a', function() {
         document.querySelector('#tips').innerHTML = 'a闪烁了';
     });">闪烁</button>
-    <button onclick="CSSAnimation.bump('#a', function() {
+    <button onclick="CSSAnimation.bump('#b', function() {
         document.querySelector('#tips').innerHTML = 'a凸大了';
     });">凸大</button>
     <button onclick="CSSAnimation.float('#a', function() {
@@ -56,25 +56,34 @@
             .then(out, function one(out) {
                 addup();
                 CSSAnimation.move('#a', '#b', this.asyncFunction(function() {
-                    document.querySelector('#tips').innerHTML = '当前运行,第' + out + '个动画';
+                    document.querySelector('#tips').innerHTML = '串行，第' + out + '个动画';
                 }));
             })
             .then(out, function two(out) {
                 addup();
                 CSSAnimation.swap('#a', '#b', this.asyncFunction(function() {
-                    document.querySelector('#tips').innerHTML = '当前运行,第' + out + '个动画';
+                    document.querySelector('#tips').innerHTML = '串行，第' + out + '个动画';
                 }));
             })
-            .then(out, function three(out) {
-                addup();
-                CSSAnimation.gleam('#a', this.asyncFunction(function() {
-                    document.querySelector('#tips').innerHTML = '当前运行,第' + out + '个动画';
-                }));
-            })
-            .then(out, function four(out) {
+            .meanwhile(
+                out,
+                function three(out) {
+                    addup();
+                    CSSAnimation.gleam('#a', this.asyncFunction(function() {
+                        document.querySelector('#tips').innerHTML = '并行，第' + out + '个动画';
+                    }));
+                },
+                function four(out) {
+                    addup();
+                    CSSAnimation.bump('#b', this.asyncFunction(function() {
+                        document.querySelector('#tips').innerHTML = '并行，第' + out + '个动画';
+                    }));
+                }
+            )
+            .then(out, function five(out) {
                 addup();
                 CSSAnimation.float('#a', this.asyncFunction(function() {
-                    document.querySelector('#tips').innerHTML = '当前运行,第' + out + '个动画';
+                    document.querySelector('#tips').innerHTML = '串行,第' + out + '个动画';
                 }));
             })
         ;
