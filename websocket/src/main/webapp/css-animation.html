@@ -65,34 +65,34 @@
                     console.debug('串行swap，第' + out + '个动画');
                 }));
             })
-            .meanwhile(
-                out,
-            function three(out) {
-                    addup();
-                    CSSAnimation.gleam('#b', this.asyncFunction(function() {
-                        console.debug('并行gleam，第' + out + '个动画');
-                    }));
-                },
-
-                function four(out) {
-                    addup();
-                    CSSAnimation.bump('#a', this.asyncFunction(function() {
-                        console.debug('并行bump，第' + out + '个动画');
-                    }));
-                }
-            )
-            // .then(out, function three(out) {
-            //     addup();
-            //     CSSAnimation.gleam('#b', this.asyncFunction(function() {
-            //         console.debug('并行gleam，第' + out + '个动画');
-            //     }));
-            // })
-            // .then(function four(out) {
-            //     addup();
-            //     CSSAnimation.bump('#a', this.asyncFunction(function() {
-            //         console.debug('并行bump，第' + out + '个动画');
-            //     }));
-            // })
+            // .meanwhile(
+            //     out,
+            //     function three(out) {
+            //         addup();
+            //         CSSAnimation.gleam('#b', this.asyncFunction(function() {
+            //             console.debug('并行gleam，第' + out + '个动画');
+            //         }));
+            //     },
+            //
+            //     function four(out) {
+            //         addup();
+            //         CSSAnimation.bump('#a', this.asyncFunction(function() {
+            //             console.debug('并行bump，第' + out + '个动画');
+            //         }));
+            //     }
+            // )
+            .then(out, function three(out) {
+                addup();
+                CSSAnimation.gleam('#b', this.asyncFunction(function() {
+                    console.debug('并行gleam，第' + out + '个动画');
+                }));
+            })
+            .then(function four(out) {
+                addup();
+                CSSAnimation.bump('#a', this.asyncFunction(function() {
+                    console.debug('并行bump，第' + out + '个动画');
+                }));
+            })
             .then(out, function five(out) {
                 addup();
                 CSSAnimation.float('#a', this.asyncFunction(function() {

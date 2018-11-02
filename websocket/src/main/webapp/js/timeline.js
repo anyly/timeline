@@ -48,26 +48,29 @@ function Timeline() {
             }
         }
 
-        var fun = function (callback) {
-            if (callback) {
-                callback.apply(this, arguments);
-            }
-            //console.debug('async back='+plots[0].name);
+        var asyncFunction = function (callback) {
+            var fun = function () {
+                if (callback) {
+                    callback.apply(this, arguments);
+                }
+                //console.debug('async back='+plots[0].name);
 
-            if (++count==meanwhiles.length) {
-                setTimeout(function () {
+                if (++count==meanwhiles.length) {
                     plots.shift();
                     datas.shift();
                     self.next();
-                });
-            }
+                }
+            };
+            return fun;
         };
 
-        var plot = function () {
+
+        var plot = function meanwhile() {
             for (var i=0; i<meanwhiles.length; i++) {
                 meanwhiles[i].apply({
                     stop: self.stop,
-                    asyncFunction: fun
+                    asyncFunction: asyncFunction,
+                    next: self.next
                 }, params);
             }
         };
