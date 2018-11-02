@@ -1,7 +1,6 @@
 function Timeline() {
     var self = this;
     var plots = [];
-    var datas = [];
 
     self.stop = function() {
         var e = new Error();
@@ -10,54 +9,35 @@ function Timeline() {
     };
     self.next = function() {
         var plot = plots[0];
-        var data = datas[0];
         if (!plot) {
             return self;
         }
         //console.debug('name: '+plot.name);
-        plot.apply(self, data);
+        plot.apply(self);
     };
-    self.then = function (params, fun) {
-        if (arguments.length == 0) {
-            throw new ReferenceError('Timeline.then not arguments');
-        }
-        var plot = arguments[arguments.length-1];
-        var data = [];
-        for (var i=0; i<arguments.length-1; i++) {
-            data.push(arguments[i]);
+    self.then = function (plot) {
+        if (typeof(plot) != 'function') {
+            throw new ReferenceError('Timeline.then has not function');
         }
 
         plots.push(plot);
-        datas.push(data);
 
         if (plots.length == 1) {
             self.next();
         }
         return self;
     };
-    self.meanwhile = function (data) {
-        var params = [];
-        var meanwhiles = [];
+    self.meanwhile = function (...meanwhiles) {
         var count = 0;
-        for (var i=0; i<arguments.length;i++) {
-            var item = arguments[i];
-            if (typeof(item) == 'function') {
-                meanwhiles.push(item);
-            } else {
-                params.push(item);
-            }
-        }
 
         var asyncFunction = function (callback) {
             var fun = function () {
                 if (callback) {
                     callback.apply(this, arguments);
                 }
-                //console.debug('async back='+plots[0].name);
 
                 if (++count==meanwhiles.length) {
                     plots.shift();
-                    datas.shift();
                     self.next();
                 }
             };
@@ -71,12 +51,14 @@ function Timeline() {
                     stop: self.stop,
                     asyncFunction: asyncFunction,
                     next: self.next
-                }, params);
+                });
             }
         };
         plots.push(plot);
-        datas.push(params);
 
+        if (plots.length == 1) {
+            self.next();
+        }
         return self;
     };
     self.asyncFunction = function (callback) {
@@ -92,9 +74,7 @@ function Timeline() {
                     throw e;
                 }
             }
-            //console.debug('async back='+plots[0].name);
             plots.shift();
-            datas.shift();
             self.next();
         };
         return fun;

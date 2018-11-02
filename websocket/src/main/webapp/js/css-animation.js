@@ -115,7 +115,7 @@
         };
 
         var handler = handlers[id] = function () {
-            console.debug(id+'animationend');
+            //console.debug(id+'animationend');
             ele.removeEventListener("animationend",handler, false);
             if (playStyle.indexOf('forwards')<0) {
                 call.clear();
@@ -129,12 +129,12 @@
 
         var f1 = function (e) {
             ele.removeEventListener('animationiteration', f1);
-            console.debug(id + ' '+JSON.stringify(e));
+            //console.debug(id + ' '+JSON.stringify(e));
         };
         ele.addEventListener('animationiteration', f1);
         var f2 = function (e) {
             ele.removeEventListener('animationstart', f2);
-            console.debug(id + 'animationstart');
+            //console.debug(id + 'animationstart');
         };
         ele.addEventListener('animationstart', f2, false);
         return id;
