@@ -201,10 +201,12 @@
             b = document.querySelector(b);
         }
         //////
-        var x1 = a.offsetLeft;
-        var y1 = a.offsetTop;
-        var x2 = b.offsetLeft;
-        var y2 = b.offsetTop;
+        var rect1 = a.getBoundingClientRect();
+        var x1 = rect1.x;
+        var y1 = rect1.y;
+        var rect2 = b.getBoundingClientRect();
+        var x2 = rect2.x;
+        var y2 = rect2.y;
 
         if (!playStyle) {
             playStyle = '2.5s ease-in-out forwards';
@@ -252,10 +254,12 @@
             b = document.querySelector(b);
         }
         //////
-        var x1 = a.offsetLeft;
-        var y1 = a.offsetTop;
-        var x2 = b.offsetLeft;
-        var y2 = b.offsetTop;
+        var rect1 = a.getBoundingClientRect();
+        var x1 = rect1.x;
+        var y1 = rect1.y;
+        var rect2 = b.getBoundingClientRect();
+        var x2 = rect2.x;
+        var y2 = rect2.y;
 
         createAnimation(
             a,
