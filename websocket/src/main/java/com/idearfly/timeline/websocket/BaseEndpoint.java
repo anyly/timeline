@@ -111,12 +111,12 @@ public abstract class BaseEndpoint<GameCenter extends BaseGameCenter> extends ja
                             parameter.add(session);
                             set.add(session);
                             warning = false;
-                        } else if (action != null && !set.contains(action) &&
-                                (action.getClass() == parameterType
-                                || parameterType.isAssignableFrom(action.getClass()))) {
-                            parameter.add(action);
-                            set.add(action);
-                            warning = false;
+//                        } else if (action != null && !set.contains(action) &&
+//                                (action.getClass() == parameterType
+//                                || parameterType.isAssignableFrom(action.getClass()))) {
+//                            parameter.add(action);
+//                            set.add(action);
+//                            warning = false;
                         } else if (data != null && !set.contains(data) &&
                                 (data.getClass() == parameterType
                                 || parameterType.isAssignableFrom(data.getClass()))) {
