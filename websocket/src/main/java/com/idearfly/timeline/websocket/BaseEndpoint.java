@@ -194,7 +194,7 @@ public abstract class BaseEndpoint<GameCenter extends BaseGameCenter> extends ja
             }
             try {
                 String message = JSON.toJSONString(jsonObject,
-                        //SerializerFeature.WriteClassName,
+                        SerializerFeature.WriteNonStringKeyAsString,
                         SerializerFeature.DisableCircularReferenceDetect
                 );
                 //session.getAsyncRemote().sendText(message);
