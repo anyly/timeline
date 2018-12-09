@@ -43,6 +43,14 @@ public abstract class BaseGame<Player extends BasePlayer> {
         this.no = no;
     }
 
+    public LinkedHashMap<String, Player> getAllPlayers() {
+        return allPlayers;
+    }
+
+    public void setAllPlayers(LinkedHashMap<String, Player> allPlayers) {
+        this.allPlayers = allPlayers;
+    }
+
     public JSONObject config() {
         return config;
     }
@@ -53,9 +61,6 @@ public abstract class BaseGame<Player extends BasePlayer> {
 
     public void projector(Projector projector) {
         this.projector = projector;
-        if (story != null) {
-            this.projector.add(story);
-        }
     }
 
     ////////////////故事编排///////////////
@@ -184,6 +189,7 @@ public abstract class BaseGame<Player extends BasePlayer> {
      */
     public void replay() {
         reload();
+        story = story();
         if (this.projector != null) {
             projector.add(story);
         }
@@ -193,7 +199,7 @@ public abstract class BaseGame<Player extends BasePlayer> {
      * 重新加载故事
      */
     public void reload() {
-        story = story();
+
     }
 
     /**
@@ -201,6 +207,9 @@ public abstract class BaseGame<Player extends BasePlayer> {
      * @return
      */
     public String getStage() {
+        if (story == null) {
+            return null;
+        }
         return story.currentStage();
     }
 

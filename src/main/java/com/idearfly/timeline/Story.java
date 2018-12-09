@@ -111,7 +111,6 @@ public class Story implements Film {
             return false;
         }
 
-        sequence.poll();
         // 下一步执行
         Stage handler = null;
         while ((handler = sequence.peek()) != null) {
@@ -146,20 +145,23 @@ public class Story implements Film {
      */
     public boolean checkAllowCondition() {
         Stage current = sequence.peek();
-        if (current == null) {
-            return false;
-        }
-        if (current instanceof Event) {
-            Event event = (Event)current;
-            if (!event.ending()) {
-                return false;
+        if (current != null) {
+            if (current instanceof Event) {
+                Event event = (Event)current;
+                if (!event.ending()) {
+                    return false;//中断
+                }
+            } else if (current instanceof Dispatcher) {
+                Dispatcher dispatcher = (Dispatcher)current;
+                if (!dispatcher.isCompleted()) {
+                    return false;//中断
+                }
+            } else if (current instanceof Plot) {
+                return true;//执行
             }
-        } else if (current instanceof Dispatcher) {
-            Dispatcher dispatcher = (Dispatcher)current;
-            if (!dispatcher.isCompleted()) {
-                return false;
-            }
         }
+        // 跳过
+        sequence.poll();
         return true;
     }
 
